@@ -2,13 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:shoptoo/features/layouts/screens/shop_screen.dart';
 import 'package:shoptoo/features/products/screens/product_details_screen.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
+import 'package:shoptoo/shared/widgets/cards/product_card.dart';
 
 
 class SearchScreen extends StatefulWidget {
-  final List<Productt> allProducts;
+  final List<Product> allProducts;
   
   const SearchScreen({Key? key, required this.allProducts}) : super(key: key);
 
@@ -22,7 +22,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
-  List<Productt> _searchResults = [];
+  List<Product> _searchResults = [];
   String _selectedSort = 'Relevance';
   bool _isSearching = false;
 
@@ -83,9 +83,8 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
         _searchResults = [];
       } else {
         _searchResults = widget.allProducts.where((product) {
-          return product.name.toLowerCase().contains(query.toLowerCase()) ||
-                 product.category.toLowerCase().contains(query.toLowerCase());
-        }).toList();
+          return product.name.toLowerCase().contains(query.toLowerCase()) ;
+        }).cast<Product>().toList();
         
         _sortProducts();
       }
@@ -103,9 +102,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
       case 'Highest Rated':
         _searchResults.sort((a, b) => b.rating.compareTo(a.rating));
         break;
-      case 'Newest':
-        _searchResults.sort((a, b) => b.id.compareTo(a.id));
-        break;
+     
       case 'Popular':
         _searchResults.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
         break;
@@ -338,7 +335,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildProductCard(Productt product) {
+  Widget _buildProductCard(Product product) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -433,7 +430,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        product.category,
+                        "category",
                         style: GoogleFonts.poppins(
                           fontSize: 8,
                           fontWeight: FontWeight.w500,
@@ -470,22 +467,22 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'P${product.price.toStringAsFixed(2)}',
+                          'P${product.price}',
                           style: GoogleFonts.poppins(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
                             color: Pallete.primaryColor,
                           ),
                         ),
-                        if (product.originalPrice > product.price)
-                          Text(
-                            'P${product.originalPrice.toStringAsFixed(2)}',
-                            style: GoogleFonts.poppins(
-                              fontSize: 9,
-                              color: Colors.grey[500],
-                              decoration: TextDecoration.lineThrough,
-                            ),
-                          ),
+                        // if (product.originalPrice > product.price)
+                        //   Text(
+                        //     'P${product.originalPrice.toStringAsFixed(2)}',
+                        //     style: GoogleFonts.poppins(
+                        //       fontSize: 9,
+                        //       color: Colors.grey[500],
+                        //       decoration: TextDecoration.lineThrough,
+                        //     ),
+                        //   ),
                       ],
                     ),
                   ],

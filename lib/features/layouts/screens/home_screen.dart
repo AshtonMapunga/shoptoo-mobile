@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shoptoo/features/auth/data/productssample.dart';
 import 'package:shoptoo/features/layouts/screens/main_layout.dart';
 import 'package:shoptoo/features/layouts/widgets/advertising.dart';
 import 'package:shoptoo/features/layouts/widgets/app_header.dart';
@@ -6,6 +7,7 @@ import 'package:shoptoo/features/layouts/widgets/categories.dart';
 import 'package:shoptoo/features/layouts/widgets/products.dart';
 import 'package:shoptoo/features/layouts/widgets/slider.dart';
 import 'package:shoptoo/features/layouts/widgets/special_offer.dart';
+import 'package:shoptoo/shared/widgets/cards/product_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -86,281 +88,113 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSearchBar() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-      child: AppHeader(
-        showSearchBar: true,
-        searchHint: 'Search Shoptoo!',
-      ),
-    );
-  }
 
-  Widget _buildExpandedHeader() {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 30),
 
-          // Buttons Row
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    // Handle  button
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 11),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+  
+
+  Widget _buildBodyContent() {
+    return Column(
+      children: [
+       
+        Expanded(
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (scrollNotification) {
+              if (scrollNotification is ScrollUpdateNotification) {
+                if (_scrollController.offset > 100 && !_showSearchOnly) {
+                  setState(() {
+                    _showSearchOnly = true;
+                  });
+                } else if (_scrollController.offset <= 100 && _showSearchOnly) {
+                  setState(() {
+                    _showSearchOnly = false;
+                  });
+                }
+              }
+              return false;
+            },
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Categories section
+                    CategoryComponent(
+                      onCategorySelected: _onCategorySelected,
+                      initialSelectedIndex: _selectedCategoryIndex,
                     ),
-                    side: BorderSide(
-                      color: Colors.grey.withOpacity(0.3),
+                    const SizedBox(height: 2),
+
+                    CreativeSlider(
+                      imageUrls: _sliderImages,
+                      height: 200,
+                      borderRadius: 5,
+                      autoPlayInterval: const Duration(seconds: 4),
+                      onTap: () {
+                        print('Slider tapped at page');
+                      },
                     ),
-                    backgroundColor: Colors.yellow,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/icons/logo_icon.png',
-                        height: 28,
-                        width: 28,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.shopping_bag,
-                            size: 20,
-                            color: Colors.black,
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'Shoptoo',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
+                    const SizedBox(height: 20),
+
+                    ProductsComponent(
+                      products: _featuredProducts,
+                      onSeeAllPressed: _onSeeAllPressed,
+                      onProductPressed: _onProductPressed,
+                      onAddToCart: _onAddToCart,
+                    ),
+                    const SizedBox(height: 20),
+
+                    AdvertisingComponent(
+                      height: 300,
+                      title: "Premium Products",
+                      products: _advertisingProducts,
+                      onProductPressed: _onAdvertsingProductPressed,
+                      backgroundImageUrl:
+                          "https://images.unsplash.com/photo-1556760544-74068565f05c?w=800&h=400&fit=crop",
+                      showProductName: true,
+                      productImageHeight: 180,
+                      borderRadius: 5.0,
+                    ),
+                    const SizedBox(height: 20),
+
+                    SpecialOfferComponent(
+                      title: 'Summer Sale!',
+                      description:
+                          'Up to 50% off on summer collection. Don\'t miss out!',
+                      buttonText: 'Explore',
+                      imagePath: 'assets/images/summer_sale.png',
+                      backgroundColor: Colors.orange,
+                      onPressed: () {
+                        print('Summer sale button pressed!');
+                      },
+                    ),
+                    const SizedBox(height: 30),
+
+                    ProductsComponent(
+                      title: 'New Arrivals',
+                      products: sampleProducts.sublist(0, 3),
+                      onSeeAllPressed: _onSeeAllPressed,
+                      onAddToCart: _onAddToCart,
+                    ),
+                    const SizedBox(height: 50),
+                  ],
                 ),
               ),
-              const SizedBox(width: 10),
-
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    // Handle Buy Online button
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 11),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    side: BorderSide(
-                      color: Colors.grey.withOpacity(0.3),
-                    ),
-                    backgroundColor: Colors.white,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/onlinebuy.png',
-                        height: 24,
-                        width: 24,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.shopping_cart,
-                            size: 20,
-                            color: Colors.black,
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'Buy Online',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 10),
-
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    // Handle Deliver button
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 11),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    side: BorderSide(
-                      color: Colors.grey.withOpacity(0.3),
-                    ),
-                    backgroundColor: Colors.white,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/deliver.png',
-                        height: 24,
-                        width: 24,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.local_shipping,
-                            size: 20,
-                            color: Colors.black,
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'Deliver',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-          const SizedBox(height: 10),
-
-          // Search bar
-          AppHeader(
-            showSearchBar: true,
-            searchHint: 'Search Shoptoo!',
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return MainLayout(
+      initialTabIndex: 0,
+      showHeader: false, // We're handling our own header
       body: SafeArea(
-        child: Column(
-          children: [
-            // Animated header section
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              height: _showSearchOnly ? 70 : 160,
-              child: _showSearchOnly ? _buildSearchBar() : _buildExpandedHeader(),
-            ),
-            
-            // Main content with scroll
-            Expanded(
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (scrollNotification) {
-                  if (scrollNotification is ScrollUpdateNotification) {
-                    if (_scrollController.offset > 100 && !_showSearchOnly) {
-                      setState(() {
-                        _showSearchOnly = true;
-                      });
-                    } else if (_scrollController.offset <= 100 && _showSearchOnly) {
-                      setState(() {
-                        _showSearchOnly = false;
-                      });
-                    }
-                  }
-                  return false;
-                },
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Categories section
-                        CategoryComponent(
-                          onCategorySelected: _onCategorySelected,
-                          initialSelectedIndex: _selectedCategoryIndex,
-                        ),
-                        const SizedBox(height: 2),
-
-                        CreativeSlider(
-                          imageUrls: _sliderImages,
-                          height: 200,
-                          borderRadius: 20,
-                          autoPlayInterval: const Duration(seconds: 4),
-                          onTap: () {
-                            print('Slider tapped at page');
-                          },
-                        ),
-                        const SizedBox(height: 20),
-
-                        ProductsComponent(
-                          products: _featuredProducts,
-                          onSeeAllPressed: _onSeeAllPressed,
-                          onProductPressed: _onProductPressed,
-                          onAddToCart: _onAddToCart,
-                        ),
-                        const SizedBox(height: 20),
-
-                        AdvertisingComponent(
-                          height: 300,
-                          title: "Premium Products",
-                          products: _advertisingProducts,
-                          onProductPressed: _onAdvertsingProductPressed,
-                          backgroundImageUrl:
-                              "https://images.unsplash.com/photo-1556760544-74068565f05c?w=800&h=400&fit=crop",
-                          showProductName: true,
-                          productImageHeight: 150,
-                          borderRadius: 24.0,
-                        ),
-                        const SizedBox(height: 20),
-
-                        SpecialOfferComponent(
-                          title: 'Summer Sale!',
-                          description:
-                              'Up to 50% off on summer collection. Don\'t miss out!',
-                          buttonText: 'Explore',
-                          imagePath: 'assets/images/summer_sale.png',
-                          backgroundColor: Colors.orange,
-                          onPressed: () {
-                            print('Summer sale button pressed!');
-                          },
-                        ),
-                        const SizedBox(height: 30),
-
-                        ProductsComponent(
-                          title: 'New Arrivals',
-                          products: sampleProducts.sublist(0, 3),
-                          onSeeAllPressed: _onSeeAllPressed,
-                          onAddToCart: _onAddToCart,
-                        ),
-                        const SizedBox(height: 50),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        child: _buildBodyContent(),
       ),
     );
   }

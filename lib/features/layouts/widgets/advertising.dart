@@ -23,7 +23,7 @@ class AdvertisingComponent extends StatelessWidget {
     this.height = 200,
     this.showProductName = true,
     this.productImageHeight = 140,
-    this.borderRadius = 16.0,
+    this.borderRadius = 5.0,
   }) : super(key: key);
 
   @override
@@ -51,7 +51,7 @@ class AdvertisingComponent extends StatelessWidget {
           width: double.infinity, // Full screen width
           height: height,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(borderRadius),
+            borderRadius: BorderRadius.circular(5),
             image: backgroundImageUrl != null
                 ? DecorationImage(
                     image: NetworkImage(backgroundImageUrl!),
@@ -60,7 +60,7 @@ class AdvertisingComponent extends StatelessWidget {
                 : null,
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(borderRadius),
+            borderRadius: BorderRadius.circular(5),
             child: Stack(
               children: [
                 // Background image layer (if provided)
@@ -91,7 +91,7 @@ class AdvertisingComponent extends StatelessWidget {
                             width: 160,
                             margin: const EdgeInsets.only(right: 16),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(5),
                               color: Colors.white,
                               boxShadow: [
                                 BoxShadow(

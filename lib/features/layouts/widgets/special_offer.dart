@@ -25,7 +25,7 @@ class SpecialOfferComponent extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(5),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

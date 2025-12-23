@@ -61,41 +61,49 @@ class _AppHeaderState extends State<AppHeader> {
   }
 
   Widget _buildSearchBar() {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
-      ),
-      child: Row(
-        children: [
-          const SizedBox(width: 16),
-          Icon(
-            Iconsax,
-            color: Pallete.lightPrimaryTextColor.withOpacity(0.5),
-            size: 18,
+    return Column(
+      children: [
+        _buildTopMarket(),
+        SizedBox(height: 12),
+
+        Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: const Color(0xFFF5F5F5),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.withOpacity(0.1)),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: TextField(
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Pallete.lightPrimaryTextColor,
+          child: Row(
+            children: [
+              const SizedBox(width: 16),
+              Icon(
+                Icons.search,
+                color: Pallete.lightPrimaryTextColor.withOpacity(0.5),
+                size: 18,
               ),
-              decoration: InputDecoration(
-                hintText: widget.searchHint ?? 'Search...',
-                hintStyle: GoogleFonts.poppins(
-                  fontSize: 13,
-                  color: Pallete.lightPrimaryTextColor.withOpacity(0.5),
+
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Pallete.lightPrimaryTextColor,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: widget.searchHint ?? 'Search...',
+                    hintStyle: GoogleFonts.poppins(
+                      fontSize: 13,
+                      color: Pallete.lightPrimaryTextColor.withOpacity(0.5),
+                    ),
+                    border: InputBorder.none,
+                  ),
                 ),
-                border: InputBorder.none,
               ),
-            ),
+              const SizedBox(width: 8),
+            ],
           ),
-          const SizedBox(width: 8),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -140,6 +148,152 @@ class _AppHeaderState extends State<AppHeader> {
     );
   }
 
+  Widget _buildTopMarket() {
+    return Container(
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Buttons Row
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    // Handle  button
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 11),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    side: BorderSide(color: Colors.grey.withOpacity(0.3)),
+                    backgroundColor: Colors.yellow,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/icons/logo_icon.png',
+                        height: 28,
+                        width: 28,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.shopping_bag,
+                            size: 20,
+                            color: Colors.black,
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 4),
+                      const Text(
+                        'Shoptoo',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    // Handle Buy Online button
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 11),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    side: BorderSide(color: Colors.grey.withOpacity(0.3)),
+                    backgroundColor: Colors.white,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/onlinebuy.png',
+                        height: 24,
+                        width: 24,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.shopping_cart,
+                            size: 20,
+                            color: Colors.black,
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 4),
+                      const Text(
+                        'Buy Online',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 10),
+
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    // Handle Deliver button
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 11),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    side: BorderSide(color: Colors.grey.withOpacity(0.3)),
+                    backgroundColor: Colors.white,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/deliver.png',
+                        height: 24,
+                        width: 24,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(
+                            Icons.local_shipping,
+                            size: 20,
+                            color: Colors.black,
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 4),
+                      const Text(
+                        'Deliver',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          // Search bar
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.expanded) {
@@ -161,7 +315,9 @@ class _AppHeaderState extends State<AppHeader> {
                   ? Container(
                       color: Colors.white,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 10),
+                        horizontal: 10.0,
+                        vertical: 10,
+                      ),
                       child: _buildSearchBar(),
                     )
                   : null,
@@ -182,7 +338,8 @@ class _AppHeaderState extends State<AppHeader> {
             children: [
               if (widget.showBackButton)
                 IconButton(
-                  onPressed: widget.onBackPressed ?? () => Navigator.pop(context),
+                  onPressed:
+                      widget.onBackPressed ?? () => Navigator.pop(context),
                   icon: Icon(
                     Icons.arrow_back_ios,
                     color: Pallete.lightPrimaryTextColor,

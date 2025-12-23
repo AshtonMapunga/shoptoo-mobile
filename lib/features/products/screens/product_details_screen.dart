@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:shoptoo/features/layouts/screens/shop_screen.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
+import 'package:shoptoo/shared/widgets/cards/product_card.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  final Productt product;
+  final Product product;
 
   const ProductDetailsScreen({Key? key, required this.product}) : super(key: key);
 
@@ -325,7 +325,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         Row(
           children: [
             Text(
-              'P${widget.product.price.toStringAsFixed(2)}',
+              'P${widget.product.price}',
               style: GoogleFonts.poppins(
                 fontSize: 28,
                 fontWeight: FontWeight.w700,
@@ -333,9 +333,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
             SizedBox(width: 8),
-            if (widget.product.originalPrice > widget.product.price)
               Text(
-                'P${widget.product.originalPrice.toStringAsFixed(2)}',
+                'P${widget.product.originalPrice}',
                 style: GoogleFonts.poppins(
                   fontSize: 18,
                   color: Colors.grey,

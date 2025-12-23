@@ -53,20 +53,20 @@ class _MainLayoutState extends State<MainLayout> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: 
+           PreferredSize(
+              preferredSize: const Size.fromHeight(140.0),
+              child: 
+                 AppHeader(
+        showSearchBar: true,
+        searchHint: 'Search Shoptoo!',
+      ),
+            ),
       body: SafeArea(
         child: Column(
           children: [
-            // Header
-            if (widget.showHeader)
-              widget.customHeader ??
-                  AppHeader(
-                    title: widget.title,
-                    showBackButton: widget.showBackButton,
-                    showSearchBar: widget.showSearchBar,
-                    onBackPressed: widget.onBackPressed,
-                    searchHint: widget.searchHint,
-                    buttons: widget.headerButtons,
-                  ),
+
+          
 
             // Body
             Expanded(
