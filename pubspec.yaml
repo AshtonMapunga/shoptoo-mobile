@@ -21,6 +21,8 @@ dependencies:
   smooth_page_indicator: ^2.0.1
   google_fonts: ^6.3.3
   iconsax: ^0.0.8
+  flutter_map: ^8.2.2
+  latlong2: ^0.9.1
 
 dev_dependencies:
   flutter_test:
