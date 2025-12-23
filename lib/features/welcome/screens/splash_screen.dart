@@ -99,7 +99,7 @@ class SplashScreenPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 30),
                 Text(
-                  'Truly African',
+                  'Shoptoo',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

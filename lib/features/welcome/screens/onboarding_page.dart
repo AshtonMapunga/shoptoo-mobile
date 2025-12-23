@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shoptoo/core/utils/helpers.dart';
 import 'package:shoptoo/features/auth/screens/login_screen.dart';
-import 'package:shoptoo/shared/themes/colors.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnBoardingPage extends StatefulWidget {
@@ -65,7 +64,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           
           // Bottom Controls
           Positioned(
-            bottom: 50,
+            bottom: 20,
             left: 20,
             right: 20,
             child: Container(

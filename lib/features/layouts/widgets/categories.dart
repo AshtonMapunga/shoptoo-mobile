@@ -23,21 +23,18 @@ class _CategoryComponentState extends State<CategoryComponent> {
   // Category data with image paths and titles
   final List<Map<String, String>> _categories = [
    
-    {
-      'title': 'Fashion',
-      'image': 'assets/images/category/fashion.png', 
-    },
+  
     {
       'title': 'Electronics',
-      'image': 'assets/images/category/electronics.png', 
+      'image': 'assets/icons/electronics.png', 
     },
     {
       'title': 'Appliances',
-      'image': 'assets/images/category/appliances.png', 
+      'image': 'assets/icons/appliances.png', 
     },
     {
       'title': 'Furniture',
-      'image': 'assets/images/category/furniture.png', 
+      'image': 'assets/icons/furniture.png', 
     }
   ];
 

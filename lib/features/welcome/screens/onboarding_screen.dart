@@ -63,7 +63,7 @@ class IntroPage1 extends StatelessWidget {
             Center(
               child: Image.asset(Assets.smarter),
             ),
-            const SizedBox(height: 24), 
+            const SizedBox(height: 20), 
             
             Text(
               'Shop Smarter, Anytime',
@@ -108,7 +108,7 @@ class IntroPage2 extends StatelessWidget {
             Center(
               child: Image.asset(Assets.fast),
             ),
-            const SizedBox(height: 24), 
+            const SizedBox(height: 20), 
             
             Text(
               'Fast. Easy. Reliable.',

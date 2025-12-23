@@ -7,7 +7,6 @@ import 'package:shoptoo/features/layouts/widgets/products.dart';
 import 'package:shoptoo/features/layouts/widgets/slider.dart';
 import 'package:shoptoo/features/layouts/widgets/special_offer.dart';
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -87,39 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCustomHeader() {
-    return SliverAppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      pinned: true,
-      floating: false,
-      snap: false,
-      automaticallyImplyLeading: false,
-      expandedHeight: 160.0,
-      flexibleSpace: LayoutBuilder(
-        builder: (context, constraints) {
-          final safeAreaTop = MediaQuery.of(context).padding.top;
-          final appBarHeight = constraints.biggest.height;
-          final visibleMainHeight = appBarHeight - safeAreaTop;
-
-          return FlexibleSpaceBar(
-            collapseMode: CollapseMode.pin,
-            titlePadding: const EdgeInsets.all(0),
-            expandedTitleScale: 1.0,
-            title: _showSearchOnly
-                ? Container(
-                    color: Colors.white,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-                    child: AppHeader(
-                      showSearchBar: true,
-                      searchHint: 'Search Shoptoo!',
-                    ),
-                  )
-                : null,
-            background: _buildExpandedHeader(),
-          );
-        },
+  Widget _buildSearchBar() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+      child: AppHeader(
+        showSearchBar: true,
+        searchHint: 'Search Shoptoo!',
       ),
     );
   }
@@ -139,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () {
-                    // Handle Truly Africa button
+                    // Handle  button
                   },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 11),
@@ -155,9 +128,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset(
-                        'assets/icons/logo.png',
-                        height: 24,
-                        width: 24,
+                        'assets/icons/logo_icon.png',
+                        height: 28,
+                        width: 28,
                         errorBuilder: (context, error, stackTrace) {
                           return const Icon(
                             Icons.shopping_bag,
@@ -168,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(width: 4),
                       const Text(
-                        'Truly Africa',
+                        'Shoptoo',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -278,7 +251,6 @@ class _HomeScreenState extends State<HomeScreen> {
           AppHeader(
             showSearchBar: true,
             searchHint: 'Search Shoptoo!',
-            buttons: const ['Truly Africa', 'Buy Online', 'Deliver'],
           ),
         ],
       ),
@@ -287,91 +259,112 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      initialTabIndex: 0,
-      customHeader: _buildCustomHeader(),
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          // Main Content
-          SliverList(
-            delegate: SliverChildListDelegate([
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Categories section
-                    CategoryComponent(
-                      onCategorySelected: _onCategorySelected,
-                      initialSelectedIndex: _selectedCategoryIndex,
-                    ),
-                    const SizedBox(height: 2),
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Animated header section
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: _showSearchOnly ? 70 : 160,
+              child: _showSearchOnly ? _buildSearchBar() : _buildExpandedHeader(),
+            ),
+            
+            // Main content with scroll
+            Expanded(
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (scrollNotification) {
+                  if (scrollNotification is ScrollUpdateNotification) {
+                    if (_scrollController.offset > 100 && !_showSearchOnly) {
+                      setState(() {
+                        _showSearchOnly = true;
+                      });
+                    } else if (_scrollController.offset <= 100 && _showSearchOnly) {
+                      setState(() {
+                        _showSearchOnly = false;
+                      });
+                    }
+                  }
+                  return false;
+                },
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Categories section
+                        CategoryComponent(
+                          onCategorySelected: _onCategorySelected,
+                          initialSelectedIndex: _selectedCategoryIndex,
+                        ),
+                        const SizedBox(height: 2),
 
-                    CreativeSlider(
-                      imageUrls: _sliderImages,
-                      height: 200,
-                      borderRadius: 20,
-                      autoPlayInterval: const Duration(seconds: 4),
-                      onTap: () {
-                        print('Slider tapped at page');
-                      },
-                    ),
-                    const SizedBox(height: 20),
+                        CreativeSlider(
+                          imageUrls: _sliderImages,
+                          height: 200,
+                          borderRadius: 20,
+                          autoPlayInterval: const Duration(seconds: 4),
+                          onTap: () {
+                            print('Slider tapped at page');
+                          },
+                        ),
+                        const SizedBox(height: 20),
 
-                    ProductsComponent(
-                      products: _featuredProducts,
-                      onSeeAllPressed: _onSeeAllPressed,
-                      onProductPressed: _onProductPressed,
-                      onAddToCart: _onAddToCart,
-                    ),
-                    const SizedBox(height: 20),
+                        ProductsComponent(
+                          products: _featuredProducts,
+                          onSeeAllPressed: _onSeeAllPressed,
+                          onProductPressed: _onProductPressed,
+                          onAddToCart: _onAddToCart,
+                        ),
+                        const SizedBox(height: 20),
 
-                    AdvertisingComponent(
-                      height: 300,
-                      title: "Premium Products",
-                      products: _advertisingProducts,
-                      onProductPressed: _onAdvertsingProductPressed,
-                      backgroundImageUrl:
-                          "https://images.unsplash.com/photo-1556760544-74068565f05c?w=800&h=400&fit=crop",
-                      showProductName: true,
-                      productImageHeight: 150,
-                      borderRadius: 24.0,
-                    ),
-                    const SizedBox(height: 20),
+                        AdvertisingComponent(
+                          height: 300,
+                          title: "Premium Products",
+                          products: _advertisingProducts,
+                          onProductPressed: _onAdvertsingProductPressed,
+                          backgroundImageUrl:
+                              "https://images.unsplash.com/photo-1556760544-74068565f05c?w=800&h=400&fit=crop",
+                          showProductName: true,
+                          productImageHeight: 150,
+                          borderRadius: 24.0,
+                        ),
+                        const SizedBox(height: 20),
 
-                    SpecialOfferComponent(
-                      title: 'Summer Sale!',
-                      description:
-                          'Up to 50% off on summer collection. Don\'t miss out!',
-                      buttonText: 'Explore',
-                      imagePath: 'assets/images/summer_sale.png',
-                      backgroundColor: Colors.orange,
-                      onPressed: () {
-                        print('Summer sale button pressed!');
-                      },
-                    ),
-                    const SizedBox(height: 30),
+                        SpecialOfferComponent(
+                          title: 'Summer Sale!',
+                          description:
+                              'Up to 50% off on summer collection. Don\'t miss out!',
+                          buttonText: 'Explore',
+                          imagePath: 'assets/images/summer_sale.png',
+                          backgroundColor: Colors.orange,
+                          onPressed: () {
+                            print('Summer sale button pressed!');
+                          },
+                        ),
+                        const SizedBox(height: 30),
 
-                    ProductsComponent(
-                      title: 'New Arrivals',
-                      products: sampleProducts.sublist(0, 3),
-                      onSeeAllPressed: _onSeeAllPressed,
-                      onAddToCart: _onAddToCart,
+                        ProductsComponent(
+                          title: 'New Arrivals',
+                          products: sampleProducts.sublist(0, 3),
+                          onSeeAllPressed: _onSeeAllPressed,
+                          onAddToCart: _onAddToCart,
+                        ),
+                        const SizedBox(height: 50),
+                      ],
                     ),
-                    const SizedBox(height: 50),
-                  ],
+                  ),
                 ),
               ),
-            ]),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
-
 
 final List<AdvertiseProduct> sampleAdProducts = [
   AdvertiseProduct(
