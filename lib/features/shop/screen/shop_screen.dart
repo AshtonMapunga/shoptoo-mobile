@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shoptoo/features/auth/data/productssample.dart';
 import 'package:shoptoo/features/cart/screens/cart_screen.dart';
+import 'package:shoptoo/features/layouts/screens/main_layout.dart';
 import 'package:shoptoo/features/products/screens/product_details_screen.dart';
 import 'package:shoptoo/features/search/screens/search_screen.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
@@ -33,32 +34,27 @@ class _ShopScreenState extends State<ShopScreen> {
       id: '2',
       name: 'Electronics',
       icon: Iconsax.mobile,
-      color: Colors.blue,
+      color: Pallete.primaryColor,
     ),
     ShopCategory(
       id: '3',
-      name: 'Fashion',
-      icon: Iconsax.shopping_bag,
-      color: Colors.pink,
+      name: 'Electronics',
+      icon: Iconsax.monitor,
+      color: Pallete.primaryColor,
     ),
     ShopCategory(
       id: '4',
       name: 'Home & Garden',
       icon: Iconsax.home,
-      color: Colors.green,
+      color: Pallete.primaryColor,
     ),
     ShopCategory(
       id: '5',
-      name: 'Beauty',
-      icon: Iconsax.heart,
-      color: Colors.purple,
+      name: 'Furniture',
+      icon: Iconsax.element_3,
+      color: Pallete.primaryColor,
     ),
-    ShopCategory(
-      id: '6',
-      name: 'Sports',
-      icon: Iconsax.health,
-      color: Colors.orange,
-    ),
+  
   ];
 
     final List<Product> _products = sampleProducts;
@@ -366,17 +362,19 @@ class _ShopScreenState extends State<ShopScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return MainLayout(
+            initialTabIndex: 1,
+
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
+
               backgroundColor: Colors.white,
               elevation: 0,
               pinned: true,
               floating: true,
-              expandedHeight: 140,
+              expandedHeight: 120,
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   children: [
@@ -443,6 +441,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 ),
               ),
               centerTitle: true,
+
               actions: [
                 IconButton(
                   icon: Icon(Iconsax.filter, color: Colors.black),
@@ -456,7 +455,7 @@ class _ShopScreenState extends State<ShopScreen> {
           ];
         },
         body: _buildProducts(),
-      ),
+      ), appBar: null,
     );
   }
 
@@ -465,7 +464,7 @@ class _ShopScreenState extends State<ShopScreen> {
       height: 50,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -483,13 +482,13 @@ class _ShopScreenState extends State<ShopScreen> {
                 height: 50,
                 decoration: BoxDecoration(
                   color: const Color(0xFFF5F5F5),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Row(
                   children: [
                     const SizedBox(width: 16),
                     Icon(
-                      Iconsax.search_normal,
+                      Icons.search,
                       color: Pallete.lightPrimaryTextColor.withOpacity(0.5),
                       size: 18,
                     ),
@@ -526,7 +525,7 @@ class _ShopScreenState extends State<ShopScreen> {
                   height: 50,
                   decoration: BoxDecoration(
                     color: Pallete.primaryColor,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(5),
                   ),
                   child: Icon(
                     Iconsax.shopping_bag,
@@ -600,10 +599,10 @@ class _ShopScreenState extends State<ShopScreen> {
       },
       child: Container(
         margin: EdgeInsets.only(right: 8),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         decoration: BoxDecoration(
           color: isSelected ? category.color : Colors.grey[50],
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(5),
           border: Border.all(
             color: isSelected ? category.color : Colors.grey[300]!,
           ),

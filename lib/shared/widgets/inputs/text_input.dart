@@ -87,35 +87,35 @@ class TextInputField extends StatelessWidget {
             filled: true,
             fillColor: fillColor,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(
                 color: borderColor,
                 width: borderColor == Colors.transparent ? 0 : 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(
                 color: borderColor,
                 width: borderColor == Colors.transparent ? 0 : 1,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(
                 color: focusBorderColor,
                 width: 2,
               ),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               borderSide: const BorderSide(
                 color: Colors.red,
                 width: 1,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               borderSide: const BorderSide(
                 color: Colors.red,
                 width: 2,

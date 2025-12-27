@@ -196,13 +196,13 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
               height: 50,
               decoration: BoxDecoration(
                 color: Color(0xFFF5F5F5),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(5),
               ),
               child: Row(
                 children: [
                   SizedBox(width: 16),
                   Icon(
-                    Iconsax.search_normal,
+                    Icons.search,
                     color: Pallete.lightPrimaryTextColor.withOpacity(0.5),
                     size: 20,
                   ),
@@ -244,7 +244,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
             height: 50,
             decoration: BoxDecoration(
               color: Pallete.primaryColor,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(5),
             ),
             child: IconButton(
               icon: Icon(Iconsax.sort, color: Colors.white, size: 20),
@@ -505,8 +505,8 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Iconsax.search_normal,
-                size: 80,
+                Icons.search,
+                size: 90,
                 color: Colors.grey[300],
               ),
               SizedBox(height: 20),

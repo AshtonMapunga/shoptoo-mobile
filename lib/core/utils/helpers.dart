@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 class GeneralHelpers {
@@ -38,6 +39,32 @@ class GeneralHelpers {
       int months = (diff.inDays / 30).round();
       return '$months months ago';
     }
+  }
+
+
+    static void showSnackBar(
+    BuildContext context,
+    String message, {
+    bool isSuccess = false,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        backgroundColor: isSuccess ? Colors.green : Colors.red,
+        duration: duration,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
   }
 
   // Function to check if a string represents a numeric value

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shoptoo/core/utils/assets_utils.dart';
+import 'package:shoptoo/core/utils/helpers.dart';
+import 'package:shoptoo/features/categories/screens/categories_screen.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 
 class CategoryComponent extends StatefulWidget {
@@ -22,8 +24,12 @@ class _CategoryComponentState extends State<CategoryComponent> {
 
   // Category data with image paths and titles
   final List<Map<String, String>> _categories = [
+
+    {
+      'title': 'For You',
+      'image': 'assets/icons/shopall.png', 
+    },
    
-  
     {
       'title': 'Electronics',
       'image': 'assets/icons/electronics.png', 
@@ -62,6 +68,10 @@ class _CategoryComponentState extends State<CategoryComponent> {
               ),
             ),
             GestureDetector(
+                  onTap: () async {
+                              GeneralHelpers.temporaryNavigator(context, const CategoryScreen());
+                            },
+                // Handle "See All" tap
               child: Image.asset(
                 Assets.forwardArrow,
                 fit: BoxFit.contain,

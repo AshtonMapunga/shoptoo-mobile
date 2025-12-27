@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "938263004080",
+    "project_id": "shoptoo-a4b95",
+    "storage_bucket": "shoptoo-a4b95.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:938263004080:android:91a045f69cc1a1bd094c75",
+        "android_client_info": {
+          "package_name": "com.example.shoptoo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvR-HALYUPCVWBZ2V5D3Uf6ZFbiWgL_3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

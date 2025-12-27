@@ -70,7 +70,7 @@ class _AppHeaderState extends State<AppHeader> {
           height: 50,
           decoration: BoxDecoration(
             color: const Color(0xFFF5F5F5),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(5),
             border: Border.all(color: Colors.grey.withOpacity(0.1)),
           ),
           child: Row(
@@ -230,7 +230,7 @@ class _AppHeaderState extends State<AppHeader> {
                       ),
                       const SizedBox(width: 4),
                       const Text(
-                        'Buy Online',
+                        'Buy Now',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -274,7 +274,7 @@ class _AppHeaderState extends State<AppHeader> {
                       ),
                       const SizedBox(width: 4),
                       const Text(
-                        'Deliver',
+                        'We Deliver',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,

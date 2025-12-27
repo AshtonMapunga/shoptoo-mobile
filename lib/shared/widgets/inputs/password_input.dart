@@ -83,35 +83,35 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
             filled: true,
             fillColor: widget.fillColor,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(
                 color: widget.borderColor,
                 width: widget.borderColor == Colors.transparent ? 0 : 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(
                 color: widget.borderColor,
                 width: widget.borderColor == Colors.transparent ? 0 : 1,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               borderSide: BorderSide(
                 color: widget.focusBorderColor,
                 width: 2,
               ),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               borderSide: const BorderSide(
                 color: Colors.red,
                 width: 1,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
               borderSide: const BorderSide(
                 color: Colors.red,
                 width: 2,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shoptoo/features/layouts/screens/main_layout.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 
 class WishlistScreen extends StatefulWidget {
@@ -318,8 +319,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return MainLayout(
+      initialTabIndex: 2,
       body: Stack(
         children: [
           // Background animated circles
@@ -334,7 +335,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 elevation: 0,
                 pinned: true,
                 floating: true,
-                expandedHeight: 120,
+                expandedHeight: 70,
                 flexibleSpace: FlexibleSpaceBar(
                   background: Stack(
                     children: [
@@ -426,7 +427,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
             ],
           ),
         ],
-      ),
+      ), appBar: null,
     );
   }
 

@@ -4,7 +4,7 @@ import 'package:shoptoo/shared/themes/colors.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String title;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color backgroundColor;
   final Color textColor;
   final double height;
@@ -20,7 +20,7 @@ class PrimaryButton extends StatelessWidget {
     this.backgroundColor = Pallete.secondaryColor,
     this.textColor = Colors.white,
     this.height = 56,
-    this.borderRadius = 12,
+    this.borderRadius = 5,
     this.isFullWidth = true,
     this.leadingIcon,
     this.isLoading = false,

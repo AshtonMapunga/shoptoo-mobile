@@ -3,6 +3,7 @@ import 'package:shoptoo/features/auth/data/productssample.dart';
 import 'package:shoptoo/features/layouts/screens/main_layout.dart';
 import 'package:shoptoo/features/layouts/widgets/advertising.dart';
 import 'package:shoptoo/features/layouts/widgets/app_header.dart';
+import 'package:shoptoo/features/layouts/widgets/brands.dart';
 import 'package:shoptoo/features/layouts/widgets/categories.dart';
 import 'package:shoptoo/features/layouts/widgets/products.dart';
 import 'package:shoptoo/features/layouts/widgets/slider.dart';
@@ -77,6 +78,17 @@ class _HomeScreenState extends State<HomeScreen> {
     'https://images.unsplash.com/photo-1556742044-5f1d0c6f5b0c?w=800&h=400&fit=crop',
     'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=400&fit=crop',
   ];
+
+
+  final List<Brand> brands = [
+    Brand(id: '1', name: 'KDV', imageUrl: 'assets/icons/kdv.png'),
+    Brand(id: '2', name: 'P and D', imageUrl: 'assets/icons/pd.png'),
+    Brand(id: '3', name: 'Samsung', imageUrl: 'assets/icons/samsung.png'),
+    Brand(id: '4', name: 'SPJ', imageUrl: 'assets/icons/spj.png'),
+    Brand(id: '5', name: 'Defy', imageUrl: 'assets/icons/defy.png'),
+        Brand(id: '6', name: 'Hisense', imageUrl: 'assets/icons/hisense.png'),
+  ];
+
 
   void _onAddToCart(Product product) {
     print('Add to cart: ${product.name}');
@@ -158,6 +170,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 20),
 
+
+ BrandComponent(
+            brands: brands,
+            height: 120,
+            itemWidth: 100,
+            itemSpacing: 20,
+            animationSpeed: 40, 
+          ),
+                              const SizedBox(height: 20),
+
                     SpecialOfferComponent(
                       title: 'Summer Sale!',
                       description:
@@ -192,7 +214,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return MainLayout(
       initialTabIndex: 0,
-      showHeader: false, // We're handling our own header
+        appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(140.0),
+        child: AppHeader(showSearchBar: true, searchHint: 'Search Shoptoo!'),
+      ),
+      
       body: SafeArea(
         child: _buildBodyContent(),
       ),

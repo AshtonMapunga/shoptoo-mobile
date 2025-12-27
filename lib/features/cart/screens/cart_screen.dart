@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shoptoo/features/cart/models/cart_itm.dart';
 import 'package:shoptoo/features/checkout/screens/checkout_screen.dart';
+import 'package:shoptoo/features/layouts/screens/main_layout.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 
 
@@ -159,8 +160,9 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return MainLayout(
+            initialTabIndex: 3,
+
       body: Stack(
         children: [
           // Background animated circles
@@ -190,7 +192,7 @@ class _CartScreenState extends State<CartScreen> {
             ],
           ),
         ],
-      ),
+      ), appBar: null,
     );
   }
 

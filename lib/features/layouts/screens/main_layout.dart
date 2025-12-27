@@ -4,6 +4,8 @@ import 'package:shoptoo/features/layouts/widgets/bottom_nav.dart';
 
 class MainLayout extends StatefulWidget {
   final Widget body;
+    final PreferredSizeWidget? appBar;
+
   final String title;
   final bool showBackButton;
   final bool showSearchBar;
@@ -27,7 +29,7 @@ class MainLayout extends StatefulWidget {
     this.searchHint,
     this.customHeader,
     this.initialTabIndex = 0,
-    this.headerButtons,
+    this.headerButtons, required this.appBar,
   });
 
   @override
@@ -53,25 +55,13 @@ class _MainLayoutState extends State<MainLayout> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: 
-           PreferredSize(
-              preferredSize: const Size.fromHeight(140.0),
-              child: 
-                 AppHeader(
-        showSearchBar: true,
-        searchHint: 'Search Shoptoo!',
-      ),
-            ),
+       appBar: widget.showHeader ? widget.appBar : null,
+    
       body: SafeArea(
         child: Column(
           children: [
-
-          
-
             // Body
-            Expanded(
-              child: widget.body,
-            ),
+            Expanded(child: widget.body),
           ],
         ),
       ),

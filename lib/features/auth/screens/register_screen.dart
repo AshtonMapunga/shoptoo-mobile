@@ -1,6 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shoptoo/core/utils/helpers.dart';
+import 'package:shoptoo/features/auth/data/datasource/firebase_data_source_impl.dart';
+import 'package:shoptoo/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:shoptoo/features/auth/domain/repositories/auth_repository.dart';
+import 'package:shoptoo/features/auth/domain/usecases/sign_up_usecase.dart';
 import 'package:shoptoo/features/auth/screens/login_screen.dart';
 import 'package:shoptoo/features/layouts/screens/home_screen.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
@@ -10,23 +16,60 @@ import 'package:shoptoo/shared/widgets/inputs/password_input.dart';
 import 'package:shoptoo/shared/widgets/inputs/text_input.dart';
 
 
-class SignUpScreen extends StatefulWidget {
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepositoryImpl(
+  FirebaseAuthDataSourceImpl(FirebaseAuth.instance),
+);
+});
+
+
+final signUpUseCaseProvider = Provider<SignUpUseCase>((ref) {
+  final repository = ref.read(authRepositoryProvider);
+  return SignUpUseCase(repository);
+});
+
+
+class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  ConsumerState<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _fullNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
+
+
+      Future<void> signUp() async {
+    setState(() => _isLoading = true);
+    try {
+      final useCase = ref.read(signUpUseCaseProvider);
+      final user = await useCase(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sign up successful! Check your email to verify.')),
+      );
+
+                                          GeneralHelpers.temporaryNavigator(context, const SignUpScreen());
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   void dispose() {
-    _fullNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -220,24 +263,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       const SizedBox(height: 40),
 
-                      // Full Name Field using TextInputField component
-                      TextInputField(
-                        label: 'Full Name',
-                        hintText: 'Enter your full name',
-                        controller: _fullNameController,
-                        keyboardType: TextInputType.name,
-                        prefixIcon: Icons.person_outline,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your full name';
-                          }
-                          if (value.length < 2) {
-                            return 'Name must be at least 2 characters';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
+                  
 
                       // Email Field using TextInputField component
                       TextInputField(
@@ -324,7 +350,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       // Sign Up Button using PrimaryButton component
                       PrimaryButton(
                         title: 'Sign Up',
-                        onPressed: _handleSignUp,
+                        onPressed: _isLoading ? null : signUp,
                         backgroundColor: Pallete.secondaryColor,
                         isLoading: _isLoading,
                       ),
