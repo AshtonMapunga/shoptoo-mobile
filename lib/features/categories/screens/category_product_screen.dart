@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shoptoo/features/categories/screens/categories_screen.dart';
+import 'package:shoptoo/features/products/domain/entities/product_entity.dart';
+import 'package:shoptoo/features/shop/screen/shop_screen.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 import 'package:shoptoo/shared/widgets/cards/product_card.dart';
 import 'package:shoptoo/features/auth/data/productssample.dart';
@@ -19,11 +21,11 @@ class ProductsByCategoryScreen extends StatefulWidget {
 }
 
 class _ProductsByCategoryScreenState extends State<ProductsByCategoryScreen> {
-  final List<Product> _products = sampleProducts;
+  final List<ProductEntity> _products = sampleProducts;
   String _selectedSort = 'Popular';
   bool _isGridView = true;
 
-  List<Product> get _filteredProducts {
+  List<ProductEntity> get _filteredProducts {
     // Filter products by category name
     // Note: You'll need to add a 'category' field to your Product class
     var products = _products.where((product) {
@@ -330,7 +332,7 @@ class _ProductsByCategoryScreenState extends State<ProductsByCategoryScreen> {
                           bottomLeft: Radius.circular(12),
                         ),
                         child: Image.network(
-                          product.imageUrl,
+                          product.image,
                           width: 120,
                           height: 120,
                           fit: BoxFit.cover,

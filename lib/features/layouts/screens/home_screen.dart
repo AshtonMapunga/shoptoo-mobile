@@ -8,7 +8,8 @@ import 'package:shoptoo/features/layouts/widgets/categories.dart';
 import 'package:shoptoo/features/layouts/widgets/products.dart';
 import 'package:shoptoo/features/layouts/widgets/slider.dart';
 import 'package:shoptoo/features/layouts/widgets/special_offer.dart';
-import 'package:shoptoo/shared/widgets/cards/product_card.dart';
+import 'package:shoptoo/features/products/domain/entities/product_entity.dart';
+import 'package:shoptoo/features/shop/screen/shop_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -57,14 +58,14 @@ class _HomeScreenState extends State<HomeScreen> {
     print('Special offer button pressed!');
   }
 
-  final List<Product> _featuredProducts = sampleProducts;
+  final List<ProductEntity> _featuredProducts = sampleProducts;
   final List<AdvertiseProduct> _advertisingProducts = sampleAdProducts;
 
   void _onSeeAllPressed() {
     print('See all products pressed');
   }
 
-  void _onProductPressed(Product product) {
+  void _onProductPressed(ProductEntity product) {
     print('Product pressed: ${product.name}');
   }
 
@@ -90,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
 
-  void _onAddToCart(Product product) {
+  void _onAddToCart(ProductEntity product) {
     print('Add to cart: ${product.name}');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

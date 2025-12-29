@@ -1,102 +1,113 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:shoptoo/features/auth/data/productssample.dart';
+import 'package:shoptoo/app/providers/product_provider.dart';
 import 'package:shoptoo/features/cart/screens/cart_screen.dart';
 import 'package:shoptoo/features/layouts/screens/main_layout.dart';
+import 'package:shoptoo/features/products/domain/entities/product_entity.dart';
 import 'package:shoptoo/features/products/screens/product_details_screen.dart';
 import 'package:shoptoo/features/search/screens/search_screen.dart';
+import 'package:shoptoo/shared/mocks/mock_product_card.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 import 'package:shoptoo/shared/widgets/cards/product_card.dart';
 
-class ShopScreen extends StatefulWidget {
+class ShopScreen extends ConsumerStatefulWidget {
   const ShopScreen({Key? key}) : super(key: key);
 
   @override
-  State<ShopScreen> createState() => _ShopScreenState();
+  ConsumerState<ShopScreen> createState() => _ShopScreenState();
 }
 
-class _ShopScreenState extends State<ShopScreen> {
+class _ShopScreenState extends ConsumerState<ShopScreen> {
   int _selectedCategory = 0;
   String _selectedSort = 'Popular';
-  int _selectedFilter = 0;
   int _cartItemCount = 0;
   final TextEditingController _searchController = TextEditingController();
+  late final ScrollController _scrollController;
 
   final List<ShopCategory> _categories = [
     ShopCategory(
+      categoryId: null, // null for "All" category
       id: '1',
       name: 'All',
       icon: Iconsax.category,
       color: Pallete.primaryColor,
     ),
     ShopCategory(
+      categoryId: 259,
       id: '2',
       name: 'Electronics',
       icon: Iconsax.mobile,
       color: Pallete.primaryColor,
     ),
     ShopCategory(
+      categoryId: 260,
       id: '3',
-      name: 'Electronics',
+      name: 'Computers',
       icon: Iconsax.monitor,
       color: Pallete.primaryColor,
     ),
     ShopCategory(
+      categoryId: 261,
       id: '4',
       name: 'Home & Garden',
       icon: Iconsax.home,
       color: Pallete.primaryColor,
     ),
     ShopCategory(
+      categoryId: 233,
       id: '5',
       name: 'Furniture',
       icon: Iconsax.element_3,
       color: Pallete.primaryColor,
     ),
-  
   ];
 
-    final List<Product> _products = sampleProducts;
-
-  List<Product> get _filteredProducts {
-    var products = _products;
-
-    // Note: Since Product class doesn't have category, we can't filter by category
-    // If you need category filtering, you'll need to add category field to Product class
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()
+      ..addListener(_onScroll);
     
-    switch (_selectedSort) {
-      case 'Price: Low to High':
-        products.sort((a, b) => double.parse(a.price).compareTo(double.parse(b.price)));
-        break;
-      case 'Price: High to Low':
-        products.sort((a, b) => double.parse(b.price).compareTo(double.parse(a.price)));
-        break;
-      case 'Highest Rated':
-        products.sort((a, b) => b.rating.compareTo(a.rating));
-        break;
-      case 'Newest':
-        // Sort by isNew first, then by name as fallback
-        products.sort((a, b) {
-          if (a.isNew && !b.isNew) return -1;
-          if (!a.isNew && b.isNew) return 1;
-          return a.name.compareTo(b.name);
-        });
-        break;
-      case 'Popular':
-      default:
-        products.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
-        break;
+    // Load initial products for the "All" category
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+  if (_selectedCategory == 0) {
+    ref.read(productsControllerProvider.notifier).refresh();
+  } else {
+    final categoryId = _categories[_selectedCategory].categoryId;
+    if (categoryId != null) {
+      ref
+          .read(productsByCategoryControllerProvider.notifier)
+          .loadCategory(categoryId);
     }
+  }
+});
 
-    // Filter by category if selected and Product has category field
-    // Note: You'll need to add category to Product class first
-    if (_selectedCategory > 0 && _categories[_selectedCategory].name != 'All') {
-      // Uncomment when you add category to Product class
-      // products = products.where((product) => product.category == _categories[_selectedCategory].name).toList();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      
+      if (_selectedCategory == 0) {
+        // Fetch next page for all products
+        ref.read(productsControllerProvider.notifier).fetchNext();
+      } else {
+        final categoryId = _categories[_selectedCategory].categoryId;
+        if (categoryId != null) {
+          // Fetch next page for category products
+          ref.read(productsByCategoryControllerProvider.notifier).fetchNext();
+        }
+      }
     }
+  }
 
-    return products;
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _searchController.dispose();
+    super.dispose();
   }
 
   void _showFilters() {
@@ -108,13 +119,13 @@ class _ShopScreenState extends State<ShopScreen> {
         height: MediaQuery.of(context).size.height * 0.7,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
               Row(
@@ -128,16 +139,16 @@ class _ShopScreenState extends State<ShopScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Iconsax.close_circle),
+                    icon: const Icon(Iconsax.close_circle),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Sort Options
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.grey[50],
                   borderRadius: BorderRadius.circular(16),
@@ -152,7 +163,7 @@ class _ShopScreenState extends State<ShopScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -181,11 +192,11 @@ class _ShopScreenState extends State<ShopScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Price Range
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.grey[50],
                   borderRadius: BorderRadius.circular(16),
@@ -200,7 +211,7 @@ class _ShopScreenState extends State<ShopScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
@@ -214,7 +225,7 @@ class _ShopScreenState extends State<ShopScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: TextFormField(
                             decoration: InputDecoration(
@@ -231,7 +242,7 @@ class _ShopScreenState extends State<ShopScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Actions
               Row(
@@ -241,12 +252,11 @@ class _ShopScreenState extends State<ShopScreen> {
                       onPressed: () {
                         setState(() {
                           _selectedSort = 'Popular';
-                          _selectedCategory = 0;
                         });
                         Navigator.pop(context);
                       },
                       style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -260,13 +270,13 @@ class _ShopScreenState extends State<ShopScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Pallete.primaryColor,
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -294,32 +304,31 @@ class _ShopScreenState extends State<ShopScreen> {
     Navigator.push(
       context,
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => SearchScreen(
-          allProducts: _products,
-        ),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            const SearchScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(0.0, 1.0);
           const end = Offset.zero;
           const curve = Curves.easeInOut;
-          
-          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          var tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
           var offsetAnimation = animation.drive(tween);
 
-          return SlideTransition(
-            position: offsetAnimation,
-            child: child,
-          );
+          return SlideTransition(position: offsetAnimation, child: child);
         },
-        transitionDuration: Duration(milliseconds: 500),
+        transitionDuration: const Duration(milliseconds: 500),
       ),
     );
   }
 
-  void _addToCart(Product product) {
+  void _addToCart(ProductEntity product) {
     setState(() {
       _cartItemCount++;
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${product.name} added to cart'),
@@ -329,9 +338,7 @@ class _ShopScreenState extends State<ShopScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => CartScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => const CartScreen()),
             );
           },
         ),
@@ -339,7 +346,7 @@ class _ShopScreenState extends State<ShopScreen> {
     );
   }
 
-  void _addToWishlist(Product product) {
+  void _addToWishlist(ProductEntity product) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${product.name} added to wishlist'),
@@ -348,28 +355,68 @@ class _ShopScreenState extends State<ShopScreen> {
     );
   }
 
-  void _onProductPressed(Product product) {
-    // Navigate to product details screen
+  void _onProductPressed(ProductEntity product) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProductDetailsScreen(
-          product: product,
-        ),
+        builder: (context) => ProductDetailsScreen(product: product),
       ),
     );
+  }
+
+void _onCategorySelected(int index) {
+  setState(() {
+    _selectedCategory = index;
+  });
+
+  if (index == 0) {
+    // Load all products (reset + fetch page 1)
+    ref.read(productsControllerProvider.notifier).refresh();
+  } else {
+    final categoryId = _categories[index].categoryId;
+    if (categoryId != null) {
+      ref
+          .read(productsByCategoryControllerProvider.notifier)
+          .loadCategory(categoryId);
+    }
+  }
+}
+
+
+  List<ProductEntity> _sortProducts(List<ProductEntity> products) {
+    final sortedProducts = List<ProductEntity>.from(products);
+    
+    switch (_selectedSort) {
+      case 'Price: Low to High':
+        sortedProducts.sort((a, b) => a.price.compareTo(b.price));
+        break;
+      case 'Price: High to Low':
+        sortedProducts.sort((a, b) => b.price.compareTo(a.price));
+        break;
+      case 'Highest Rated':
+        sortedProducts.sort((a, b) => b.rating.compareTo(a.rating));
+        break;
+      case 'Newest':
+        // Assuming products have a createdAt field
+        // sortedProducts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        break;
+      case 'Popular':
+      default:
+        sortedProducts.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
+        break;
+    }
+    
+    return sortedProducts;
   }
 
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-            initialTabIndex: 1,
-
+      initialTabIndex: 1,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
-
               backgroundColor: Colors.white,
               elevation: 0,
               pinned: true,
@@ -422,7 +469,6 @@ class _ShopScreenState extends State<ShopScreen> {
                         },
                       ),
                     ),
-                    
                     Positioned(
                       bottom: 20,
                       left: 20,
@@ -441,21 +487,21 @@ class _ShopScreenState extends State<ShopScreen> {
                 ),
               ),
               centerTitle: true,
-
               actions: [
                 IconButton(
-                  icon: Icon(Iconsax.filter, color: Colors.black),
+                  icon: const Icon(Iconsax.filter, color: Colors.black),
                   onPressed: _showFilters,
                 ),
               ],
             ),
-            SliverToBoxAdapter(
-              child: _buildCategories(),
-            ),
+            SliverToBoxAdapter(child: _buildCategories()),
           ];
         },
-        body: _buildProducts(),
-      ), appBar: null,
+        body: _selectedCategory == 0 
+            ? _buildAllProducts() 
+            : _buildCategoryProducts(),
+      ),
+      appBar: null,
     );
   }
 
@@ -469,7 +515,7 @@ class _ShopScreenState extends State<ShopScreen> {
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -508,16 +554,13 @@ class _ShopScreenState extends State<ShopScreen> {
             ),
           ),
           const SizedBox(width: 12),
-          
           Stack(
             children: [
               GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => CartScreen(),
-                    ),
+                    MaterialPageRoute(builder: (context) => const CartScreen()),
                   );
                 },
                 child: Container(
@@ -527,14 +570,13 @@ class _ShopScreenState extends State<ShopScreen> {
                     color: Pallete.primaryColor,
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Iconsax.shopping_bag,
                     color: Colors.white,
                     size: 20,
                   ),
                 ),
               ),
-              
               if (_cartItemCount > 0)
                 Positioned(
                   top: 8,
@@ -549,7 +591,8 @@ class _ShopScreenState extends State<ShopScreen> {
                     ),
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 300),
-                      transitionBuilder: (Widget child, Animation<double> animation) {
+                      transitionBuilder:
+                          (Widget child, Animation<double> animation) {
                         return ScaleTransition(
                           scale: animation,
                           child: child,
@@ -578,7 +621,7 @@ class _ShopScreenState extends State<ShopScreen> {
   Widget _buildCategories() {
     return Container(
       height: 70,
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _categories.length,
@@ -592,14 +635,10 @@ class _ShopScreenState extends State<ShopScreen> {
   Widget _buildCategoryItem(ShopCategory category, int index) {
     final isSelected = _selectedCategory == index;
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedCategory = index;
-        });
-      },
+      onTap: () => _onCategorySelected(index),
       child: Container(
-        margin: EdgeInsets.only(right: 8),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
         decoration: BoxDecoration(
           color: isSelected ? category.color : Colors.grey[50],
           borderRadius: BorderRadius.circular(5),
@@ -615,7 +654,7 @@ class _ShopScreenState extends State<ShopScreen> {
               color: isSelected ? Colors.white : category.color,
               size: 18,
             ),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             Text(
               category.name,
               style: GoogleFonts.poppins(
@@ -630,29 +669,120 @@ class _ShopScreenState extends State<ShopScreen> {
     );
   }
 
-  Widget _buildProducts() {
-    return Padding(
-      padding: EdgeInsets.all(16),
-      child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 0.75,
-        ),
-        itemCount: _filteredProducts.length,
-        itemBuilder: (context, index) {
-          final product = _filteredProducts[index];
-          return ProductCardComponent(
-            product: product,
-            onTap: () => _onProductPressed(product),
-            onAddToCart: () => _addToCart(product),
-            onAddToWishlist: () => _addToWishlist(product),
-            width: MediaQuery.of(context).size.width / 2 - 24, // Adjust for grid spacing
-            imageHeight: 110, // Matches the height in original design
+  Widget _buildAllProducts() {
+    final productsState = ref.watch(productsControllerProvider);
+    final controller = ref.read(productsControllerProvider.notifier);
+
+    return productsState.when(
+      loading: () => const Center(child: ProductShimmerLoader(itemCount: 6)),
+      error: (e, _) => Center(child: Text('Error: $e')),
+      data: (products) {
+        if (products.isEmpty) {
+          return const Center(child: Text("No products found"));
+        }
+
+        final sortedProducts = _sortProducts(products);
+
+        return GridView.builder(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(16),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.75,
+          ),
+          itemCount: sortedProducts.length + (controller.hasMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index >= sortedProducts.length) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            final product = sortedProducts[index];
+            return ProductCardComponent(
+              product: product,
+              onTap: () => _onProductPressed(product),
+              onAddToCart: () => _addToCart(product),
+              onAddToWishlist: () => _addToWishlist(product),
+              width: MediaQuery.of(context).size.width / 2 - 24,
+              imageHeight: 110,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildCategoryProducts() {
+    final state = ref.watch(productsByCategoryControllerProvider);
+    final controller = ref.read(productsByCategoryControllerProvider.notifier);
+
+    return state.when(
+      loading: () => const Center(child: ProductShimmerLoader(itemCount: 6)),
+      error: (e, _) => Center(child: Text('Error: $e')),
+      data: (products) {
+        if (products.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Iconsax.box,
+                  size: 80,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No products in this category',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
           );
-        },
-      ),
+        }
+
+        final sortedProducts = _sortProducts(products);
+
+        return GridView.builder(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(16),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.75,
+          ),
+          itemCount: sortedProducts.length + (controller.hasMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index >= sortedProducts.length) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            final product = sortedProducts[index];
+            return ProductCardComponent(
+              product: product,
+              onTap: () => _onProductPressed(product),
+              onAddToCart: () => _addToCart(product),
+              onAddToWishlist: () => _addToWishlist(product),
+              width: MediaQuery.of(context).size.width / 2 - 24,
+              imageHeight: 110,
+            );
+          },
+        );
+      },
     );
   }
 }
@@ -662,13 +792,13 @@ class ShopCategory {
   final String name;
   final IconData icon;
   final Color color;
+  final int? categoryId;
 
   ShopCategory({
     required this.id,
     required this.name,
     required this.icon,
     required this.color,
+    this.categoryId,
   });
 }
-
-// Remove the old Productt class and keep only the Product class from product_card_component.dart

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shoptoo/features/products/domain/entities/product_entity.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 import 'package:shoptoo/shared/widgets/cards/product_card.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  final Product product;
+  final ProductEntity product;
 
   const ProductDetailsScreen({Key? key, required this.product}) : super(key: key);
 
@@ -45,7 +46,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     super.initState();
     _pageController = PageController();
     // Add the main product image as the first image
-    _productImages.insert(0, widget.product.imageUrl);
+    _productImages.insert(0, widget.product.image);
   }
 
   @override
@@ -275,27 +276,27 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ),
         ),
 
-        // Discount Badge
-        if (widget.product.discount > 0)
-          Positioned(
-            top: 80,
-            left: 20,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '${widget.product.discount}% OFF',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
+        // // Discount Badge
+        // if (widget.product.discount > 0)
+        //   Positioned(
+        //     top: 80,
+        //     left: 20,
+        //     child: Container(
+        //       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        //       decoration: BoxDecoration(
+        //         color: Colors.red,
+        //         borderRadius: BorderRadius.circular(12),
+        //       ),
+        //       child: Text(
+        //         '${widget.product.discount}% OFF',
+        //         style: GoogleFonts.poppins(
+        //           fontSize: 14,
+        //           fontWeight: FontWeight.w600,
+        //           color: Colors.white,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
       ],
     );
   }
@@ -311,7 +312,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               child: Text(
                 widget.product.name,
                 style: GoogleFonts.poppins(
-                  fontSize: 24,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: Colors.black,
                 ),
@@ -327,16 +328,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             Text(
               'P${widget.product.price}',
               style: GoogleFonts.poppins(
-                fontSize: 28,
+                fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: Pallete.primaryColor,
               ),
             ),
             SizedBox(width: 8),
               Text(
-                'P${widget.product.originalPrice}',
+                'P${widget.product.regularPrice}',
                 style: GoogleFonts.poppins(
-                  fontSize: 18,
+                  fontSize: 12,
                   color: Colors.grey,
                   decoration: TextDecoration.lineThrough,
                 ),
@@ -371,14 +372,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ],
           ),
         ),
-        SizedBox(width: 8),
-        Text(
-          '(${widget.product.reviewCount} reviews)',
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            color: Colors.grey[600],
-          ),
-        ),
+   
         Spacer(),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -393,7 +387,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               Text(
                 'In Stock',
                 style: GoogleFonts.poppins(
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: Colors.green,
                 ),
@@ -412,7 +406,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         Text(
           'Description',
           style: GoogleFonts.poppins(
-            fontSize: 18,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.black,
           ),
@@ -421,7 +415,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         Text(
           'Experience premium quality with our ${widget.product.name}. This product offers exceptional value with its advanced features and stylish design. Perfect for everyday use with durable materials and excellent performance.',
           style: GoogleFonts.poppins(
-            fontSize: 14,
+            fontSize: 12,
             color: Colors.grey[700],
             height: 1.6,
           ),
@@ -437,7 +431,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         Text(
           'Size',
           style: GoogleFonts.poppins(
-            fontSize: 18,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.black,
           ),
@@ -454,7 +448,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 });
               },
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                 decoration: BoxDecoration(
                   color: _selectedSize == index 
                     ? Pallete.primaryColor 
@@ -469,7 +463,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 child: Text(
                   _sizes[index],
                   style: GoogleFonts.poppins(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: _selectedSize == index ? Colors.white : Colors.black,
                   ),
@@ -489,7 +483,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         Text(
           'Color',
           style: GoogleFonts.poppins(
-            fontSize: 18,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Colors.black,
           ),
@@ -622,15 +616,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       color: Pallete.primaryColor,
                       width: 2,
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(5),
                     ),
                   ),
                   child: Text(
                     'Add to Cart',
                     style: GoogleFonts.poppins(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -648,15 +642,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Pallete.primaryColor,
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(5),
                     ),
                   ),
                   child: Text(
                     'Buy Now',
                     style: GoogleFonts.poppins(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),

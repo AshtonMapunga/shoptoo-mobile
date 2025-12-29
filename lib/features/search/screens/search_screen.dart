@@ -1,31 +1,31 @@
 // features/search/view/search_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shoptoo/app/providers/product_provider.dart';
+import 'package:shoptoo/features/products/domain/entities/product_entity.dart';
+import 'package:shoptoo/features/products/presentations/controllers/search_products_controller.dart';
 import 'package:shoptoo/features/products/screens/product_details_screen.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 import 'package:shoptoo/shared/widgets/cards/product_card.dart';
 
-
-class SearchScreen extends StatefulWidget {
-  final List<Product> allProducts;
-  
-  const SearchScreen({Key? key, required this.allProducts}) : super(key: key);
+class SearchScreen extends ConsumerStatefulWidget {
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  ConsumerState<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderStateMixin {
+class _SearchScreenState extends ConsumerState<SearchScreen>
+    with SingleTickerProviderStateMixin {
   late TextEditingController _searchController;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  late final ScrollController _scrollController;
 
-  List<Product> _searchResults = [];
   String _selectedSort = 'Relevance';
-  bool _isSearching = false;
-
   final List<String> _sortOptions = [
     'Relevance',
     'Price: Low to High',
@@ -40,6 +40,17 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
     super.initState();
     _searchController = TextEditingController();
     
+    // Initialize scroll controller for pagination
+    _scrollController = ScrollController()
+      ..addListener(() {
+        if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 300) {
+          ref
+              .read(searchProductsControllerProvider.notifier)
+              .fetchNext();
+        }
+      });
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -72,39 +83,33 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
   void dispose() {
     _searchController.dispose();
     _animationController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   void _performSearch(String query) {
-    setState(() {
-      _isSearching = query.isNotEmpty;
-      
-      if (query.isEmpty) {
-        _searchResults = [];
-      } else {
-        _searchResults = widget.allProducts.where((product) {
-          return product.name.toLowerCase().contains(query.toLowerCase()) ;
-        }).cast<Product>().toList();
-        
-        _sortProducts();
-      }
-    });
+    ref
+        .read(searchProductsControllerProvider.notifier)
+        .search(query);
   }
 
-  void _sortProducts() {
-    switch (_selectedSort) {
+  void _sortProducts(List<ProductEntity> products, String sortOption) {
+    switch (sortOption) {
       case 'Price: Low to High':
-        _searchResults.sort((a, b) => a.price.compareTo(b.price));
+        products.sort((a, b) => a.price.compareTo(b.price));
         break;
       case 'Price: High to Low':
-        _searchResults.sort((a, b) => b.price.compareTo(a.price));
+        products.sort((a, b) => b.price.compareTo(a.price));
         break;
       case 'Highest Rated':
-        _searchResults.sort((a, b) => b.rating.compareTo(a.rating));
+        products.sort((a, b) => b.rating.compareTo(a.rating));
         break;
-     
       case 'Popular':
-        _searchResults.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
+        products.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
+        break;
+      case 'Newest':
+        // Assuming products have a createdAt field
+        // products.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         break;
       case 'Relevance':
       default:
@@ -120,13 +125,13 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
       builder: (context) => Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -141,15 +146,15 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Iconsax.close_circle),
+                    icon: const Icon(Iconsax.close_circle),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ..._sortOptions.map((option) => ListTile(
                 leading: Icon(
-                  _selectedSort == option ? Iconsax.radio : Iconsax.radio,
+                  Iconsax.radio,
                   color: _selectedSort == option ? Pallete.primaryColor : Colors.grey,
                 ),
                 title: Text(
@@ -163,12 +168,11 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                 onTap: () {
                   setState(() {
                     _selectedSort = option;
-                    _sortProducts();
                   });
                   Navigator.pop(context);
                 },
               )).toList(),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -178,14 +182,14 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
 
   Widget _buildSearchHeader() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -195,18 +199,18 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
             child: Container(
               height: 50,
               decoration: BoxDecoration(
-                color: Color(0xFFF5F5F5),
+                color: const Color(0xFFF5F5F5),
                 borderRadius: BorderRadius.circular(5),
               ),
               child: Row(
                 children: [
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Icon(
                     Icons.search,
                     color: Pallete.lightPrimaryTextColor.withOpacity(0.5),
                     size: 20,
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: TextField(
                       controller: _searchController,
@@ -228,7 +232,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                   ),
                   if (_searchController.text.isNotEmpty)
                     IconButton(
-                      icon: Icon(Iconsax.close_circle, size: 20),
+                      icon: const Icon(Iconsax.close_circle, size: 20),
                       onPressed: () {
                         _searchController.clear();
                         _performSearch('');
@@ -238,7 +242,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
               ),
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Container(
             width: 50,
             height: 50,
@@ -247,7 +251,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
               borderRadius: BorderRadius.circular(5),
             ),
             child: IconButton(
-              icon: Icon(Iconsax.sort, color: Colors.white, size: 20),
+              icon: const Icon(Iconsax.sort, color: Colors.white, size: 20),
               onPressed: _showSortOptions,
             ),
           ),
@@ -257,239 +261,128 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
   }
 
   Widget _buildSearchResults() {
-    if (!_isSearching) {
+    final searchState = ref.watch(searchProductsControllerProvider);
+    final controller = ref.read(searchProductsControllerProvider.notifier);
+
+    if (!searchState.isLoading && _searchController.text.isEmpty) {
       return _buildEmptyState();
     }
 
-    if (_searchResults.isEmpty) {
-      return _buildNoResults();
-    }
+    return searchState.when(
+      loading: () {
+        if (searchState.value != null && searchState.value!.isNotEmpty) {
+          // Show existing results while loading more
+          return _buildResultsGrid(searchState.value!, controller);
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+      error: (error, stackTrace) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Colors.red[300],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Error loading products',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error.toString(),
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.grey[500],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+      data: (products) {
+        if (products.isEmpty) {
+          return _buildNoResults();
+        }
+
+        return _buildResultsGrid(products, controller);
+      },
+    );
+  }
+
+  Widget _buildResultsGrid(List<ProductEntity> products, SearchProductsController controller) {
+    // Apply sorting
+    final sortedProducts = List<ProductEntity>.from(products);
+    _sortProducts(sortedProducts, _selectedSort);
 
     return FadeTransition(
       opacity: _fadeAnimation,
       child: SlideTransition(
         position: _slideAnimation,
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${_searchResults.length} products found',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Pallete.primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          _selectedSort,
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Pallete.primaryColor,
-                          ),
-                        ),
-                        SizedBox(width: 4),
-                        Icon(
-                          Iconsax.arrow_down_1,
-                          size: 12,
-                          color: Pallete.primaryColor,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
+         
               Expanded(
                 child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  controller: _scrollController,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                     childAspectRatio: 0.75,
                   ),
-                  itemCount: _searchResults.length,
+                  itemCount: sortedProducts.length + (controller.hasMore ? 1 : 0),
                   itemBuilder: (context, index) {
-                    return _buildProductCard(_searchResults[index]);
+                    if (index >= sortedProducts.length) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+
+                    final product = sortedProducts[index];
+                    return ProductCardComponent(
+                      product: product,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductDetailsScreen(product: product),
+                          ),
+                        );
+                      },
+                      onAddToCart: () {
+                        // Implement add to cart functionality
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Added ${product.name} to cart'),
+                          ),
+                        );
+                      },
+                      onAddToWishlist: () {
+                        // Implement add to wishlist functionality
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Added ${product.name} to wishlist'),
+                          ),
+                        );
+                      },
+                    );
                   },
                 ),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProductCard(Product product) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductDetailsScreen(product: product),
-          ),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              blurRadius: 8,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Product Image
-            Stack(
-              children: [
-                Container(
-                  height: 110,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16),
-                    ),
-                    image: DecorationImage(
-                      image: NetworkImage(product.imageUrl),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                
-                // Discount Badge
-                if (product.discount > 0)
-                  Positioned(
-                    top: 6,
-                    left: 6,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        '${product.discount}% OFF',
-                        style: GoogleFonts.poppins(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-
-            // Product Details
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Product Name
-                    Text(
-                      product.name,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
-                    // Category
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Pallete.primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        "category",
-                        style: GoogleFonts.poppins(
-                          fontSize: 8,
-                          fontWeight: FontWeight.w500,
-                          color: Pallete.primaryColor,
-                        ),
-                      ),
-                    ),
-
-                    // Rating
-                    Row(
-                      children: [
-                        Icon(Iconsax.star1, color: Colors.amber, size: 10),
-                        SizedBox(width: 2),
-                        Text(
-                          product.rating.toString(),
-                          style: GoogleFonts.poppins(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(width: 2),
-                        Text(
-                          '(${product.reviewCount})',
-                          style: GoogleFonts.poppins(
-                            fontSize: 9,
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // Price
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'P${product.price}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: Pallete.primaryColor,
-                          ),
-                        ),
-                        // if (product.originalPrice > product.price)
-                        //   Text(
-                        //     'P${product.originalPrice.toStringAsFixed(2)}',
-                        //     style: GoogleFonts.poppins(
-                        //       fontSize: 9,
-                        //       color: Colors.grey[500],
-                        //       decoration: TextDecoration.lineThrough,
-                        //     ),
-                        //   ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -509,7 +402,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                 size: 90,
                 color: Colors.grey[300],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 'Search for Products',
                 style: GoogleFonts.poppins(
@@ -518,7 +411,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                   color: Colors.grey[600],
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 'Find your favorite products by name or category',
                 style: GoogleFonts.poppins(
@@ -543,12 +436,12 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Iconsax.search_favorite,
                 size: 80,
-                color: Colors.grey[300],
+                color: Colors.grey,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 'No Products Found',
                 style: GoogleFonts.poppins(
@@ -557,7 +450,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                   color: Colors.grey[600],
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 'Try searching with different keywords',
                 style: GoogleFonts.poppins(

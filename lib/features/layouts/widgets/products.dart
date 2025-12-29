@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shoptoo/core/utils/assets_utils.dart';
-import 'package:shoptoo/shared/widgets/cards/product_card.dart'; // Import the product card
+import 'package:shoptoo/features/products/domain/entities/product_entity.dart';
+import 'package:shoptoo/shared/widgets/cards/product_card.dart';
 
 class ProductsComponent extends StatelessWidget {
   final String title;
   final String seeAllText;
   final VoidCallback? onSeeAllPressed;
-  final List<Product> products;
-  final ValueChanged<Product>? onProductPressed;
-  final ValueChanged<Product>? onAddToCart;
-  final ValueChanged<Product>? onAddToWishlist;
+  final List<ProductEntity> products;
+  final ValueChanged<ProductEntity>? onProductPressed;
+  final ValueChanged<ProductEntity>? onAddToCart;
+  final ValueChanged<ProductEntity>? onAddToWishlist;
 
   const ProductsComponent({
     Key? key,
