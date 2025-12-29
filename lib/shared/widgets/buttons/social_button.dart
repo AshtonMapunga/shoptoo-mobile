@@ -16,7 +16,8 @@ class SocialLoginButton extends StatelessWidget {
     required this.icon,
     required this.onPressed,
     this.backgroundColor = Colors.white,
-    this.borderColor = Pallete.lightPrimaryTextColor,
+    // ignore: deprecated_member_use
+    this.borderColor = const Color.fromARGB(255, 82, 81, 81),
     this.textColor = Pallete.lightPrimaryTextColor,
   });
 
@@ -26,9 +27,9 @@ class SocialLoginButton extends StatelessWidget {
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(5),
           ),
           side: BorderSide(
             color: borderColor,

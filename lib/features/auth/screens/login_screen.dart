@@ -1,25 +1,113 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shoptoo/app/providers.dart';
 import 'package:shoptoo/core/utils/helpers.dart';
+import 'package:shoptoo/features/auth/data/datasource/firebase_data_source_impl.dart';
+import 'package:shoptoo/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:shoptoo/features/auth/domain/repositories/auth_repository.dart';
+import 'package:shoptoo/features/auth/domain/usecases/sign_in_usecase.dart';
 import 'package:shoptoo/features/auth/screens/register_screen.dart';
+import 'package:shoptoo/features/auth/screens/verify_email_screen.dart';
+import 'package:shoptoo/features/layouts/screens/home_screen.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 import 'package:shoptoo/shared/widgets/buttons/primary_button.dart';
 import 'package:shoptoo/shared/widgets/buttons/social_button.dart';
 import 'package:shoptoo/shared/widgets/inputs/password_input.dart';
 import 'package:shoptoo/shared/widgets/inputs/text_input.dart';
 
-class LoginScreen extends StatefulWidget {
+
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepositoryImpl(
+  FirebaseAuthDataSourceImpl(FirebaseAuth.instance),
+);
+});
+
+
+final signInUseCaseProvider = Provider<SignInUseCase>((ref) {
+  final repository = ref.read(authRepositoryProvider);
+  return SignInUseCase(repository);
+});
+
+
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+
+
+  Future<void> signInWithGoogle() async {
+    try {
+      final useCase = ref.read(signInWithGoogleUseCaseProvider);
+      final user = await useCase();
+
+      // Check if email is verified
+      if (!user.emailVerified) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => VerifyEmailScreen(email: user.email),
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }}
+
+   Future<void> signIn() async {
+    setState(() => _isLoading = true);
+    try {
+      final useCase = ref.read(signInUseCaseProvider);
+      final user = await useCase(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // Check if email is verified
+      if (!user.emailVerified) {
+
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => VerifyEmailScreen(email: user.email),
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
 
   @override
   void dispose() {
@@ -28,21 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-      
-      // Simulate API call
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _isLoading = false;
-        });
-        // Handle actual login here
-      });
-    }
-  }
+ 
 
   Widget _buildGoogleIcon() {
     return Image.asset(
@@ -261,8 +335,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // Login Button using PrimaryButton component
                       PrimaryButton(
-                        title: 'Login',
-                        onPressed: _handleLogin,
+                        title: 'Sign In',
+                        onPressed:  _isLoading ? null : signIn,
                         backgroundColor: Pallete.secondaryColor,
                         isLoading: _isLoading,
                       ),
@@ -304,9 +378,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           SocialLoginButton(
                             text: 'Google',
                             icon: _buildGoogleIcon(),
-                            onPressed: () {
-                              // Handle Google login
-                            },
+                            onPressed: signInWithGoogle,
                           ),
                           const SizedBox(width: 16),
                           

@@ -12,7 +12,20 @@
           "package_name": "com.example.shoptoo"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "938263004080-9qvvr67pc5nmije08nbc8pse9ohapa50.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.shoptoo",
+            "certificate_hash": "20ca2285e854fea0a61d9f040b661a11b9f9dfc9"
+          }
+        },
+        {
+          "client_id": "938263004080-5ip3bh9h16rhjg3jte5hrkahjaptroie.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDvR-HALYUPCVWBZ2V5D3Uf6ZFbiWgL_3c"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "938263004080-5ip3bh9h16rhjg3jte5hrkahjaptroie.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

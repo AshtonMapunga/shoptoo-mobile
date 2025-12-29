@@ -19,6 +19,17 @@ class AuthRepositoryImpl implements AuthRepository {
     });
   }
 
+
+  @override
+  Future<UserEntity> signInWithGoogle() async {
+    final firebaseUser = await datasource.signInWithGoogle();
+    return UserEntity(
+      id: firebaseUser.uid,
+      email: firebaseUser.email!,
+      emailVerified: firebaseUser.emailVerified,
+    );
+  }
+
   @override
   Future<UserEntity> signIn({
     required String email,

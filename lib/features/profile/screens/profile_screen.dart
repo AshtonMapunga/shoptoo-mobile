@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shoptoo/features/auth/domain/usecases/sign_out_usecase.dart';
+import 'package:shoptoo/features/auth/screens/login_screen.dart';
 import 'package:shoptoo/features/layouts/screens/main_layout.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 
@@ -67,6 +70,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     OrderStats(status: 'Delivered', count: 8, color: Colors.green),
     OrderStats(status: 'Cancelled', count: 1, color: Colors.red),
   ];
+
+
+final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
+  final repository = ref.read(authRepositoryProvider);
+  return SignOutUseCase(repository);
+});
+
+  Future<void> _logout(BuildContext context, WidgetRef ref) async {
+    try {
+      final signOutUseCase = ref.read(signOutUseCaseProvider);
+      await signOutUseCase();
+
+      // Navigate to login screen after logout
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error logging out: $e')),
+      );
+    }
+  }
+
+  
 
   void _editProfile() {
     showModalBottomSheet(
@@ -198,54 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _logout() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Logout',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: Text(
-          'Are you sure you want to logout?',
-          style: GoogleFonts.poppins(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: GoogleFonts.poppins(
-                color: Colors.grey[600],
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Logged out successfully'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-              // Navigate to login screen
-            },
-            child: Text(
-              'Logout',
-              style: GoogleFonts.poppins(
-                color: Colors.red,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
+ 
   @override
   Widget build(BuildContext context) {
     return MainLayout(
@@ -631,22 +611,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildLogoutButton() {
+    return Consumer(
+  builder: (context, ref, child) {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
       child: OutlinedButton(
-        onPressed: _logout,
+        onPressed: () => _logout(context, ref), 
         style: OutlinedButton.styleFrom(
-          padding: EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          side: BorderSide(color: Colors.red),
+          side: const BorderSide(color: Colors.red),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Iconsax.logout, color: Colors.red, size: 20),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
               'Logout',
               style: GoogleFonts.poppins(
@@ -659,6 +641,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  },
+);
+
   }
 }
 

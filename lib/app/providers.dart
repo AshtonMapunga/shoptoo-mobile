@@ -5,6 +5,7 @@ import 'package:shoptoo/features/auth/data/datasource/firebase_data_source_impl.
 import 'package:shoptoo/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:shoptoo/features/auth/domain/entities/user_entity.dart';
 import 'package:shoptoo/features/auth/domain/repositories/auth_repository.dart';
+import 'package:shoptoo/features/auth/domain/usecases/sign_in_google.dart';
 import 'package:shoptoo/features/auth/presentation/controllers/auth_controller.dart';
 
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {
@@ -23,3 +24,8 @@ final authControllerProvider =
     StateNotifierProvider<AuthController, AsyncValue<UserEntity?>>(
   (ref) => AuthController(ref.read(authRepositoryProvider)),
 );
+
+final signInWithGoogleUseCaseProvider = Provider<SignInWithGoogleUseCase>((ref) {
+  final repository = ref.read(authRepositoryProvider);
+  return SignInWithGoogleUseCase(repository);
+});
