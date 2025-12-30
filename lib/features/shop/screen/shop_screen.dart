@@ -28,7 +28,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
 
   final List<ShopCategory> _categories = [
     ShopCategory(
-      categoryId: null, // null for "All" category
+      categoryId: 233, // null for "All" category
       id: '1',
       name: 'All',
       icon: Iconsax.category,

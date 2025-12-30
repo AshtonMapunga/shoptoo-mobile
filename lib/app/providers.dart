@@ -7,6 +7,7 @@ import 'package:shoptoo/features/auth/domain/entities/user_entity.dart';
 import 'package:shoptoo/features/auth/domain/repositories/auth_repository.dart';
 import 'package:shoptoo/features/auth/domain/usecases/sign_in_google.dart';
 import 'package:shoptoo/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:shoptoo/features/categories/domain/usecases/get_categories_usecase.dart';
 
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {
   return FirebaseAuth.instance;
@@ -29,3 +30,6 @@ final signInWithGoogleUseCaseProvider = Provider<SignInWithGoogleUseCase>((ref) 
   final repository = ref.read(authRepositoryProvider);
   return SignInWithGoogleUseCase(repository);
 });
+
+
+
