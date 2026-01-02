@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shoptoo/app/providers/product_provider.dart';
+import 'package:shoptoo/features/cart/domain/entities/cart_item_entity.dart';
+import 'package:shoptoo/features/cart/presentation/providers/cart_providers.dart';
 import 'package:shoptoo/features/cart/screens/cart_screen.dart';
 import 'package:shoptoo/features/layouts/screens/main_layout.dart';
 import 'package:shoptoo/features/products/domain/entities/product_entity.dart';
@@ -324,27 +326,34 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     );
   }
 
-  void _addToCart(ProductEntity product) {
-    setState(() {
-      _cartItemCount++;
-    });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${product.name} added to cart'),
-        backgroundColor: Pallete.primaryColor,
-        action: SnackBarAction(
-          label: 'View Cart',
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const CartScreen()),
-            );
-          },
-        ),
-      ),
-    );
-  }
+
+void _addToCart(ProductEntity product) {
+  // Add the product to the cart
+  ref.read(cartControllerProvider.notifier).addItem(
+    CartItemEntity(
+      productId: product.id,
+      name: product.name,
+      image: product.image,
+      price: product.price,
+      quantity: 1,
+    ),
+  );
+
+  // Show snackbar confirmation
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('${product.name} added to cart'),
+      duration: const Duration(seconds: 2),
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    ),
+  );
+}
+
+
+
+
 
   void _addToWishlist(ProductEntity product) {
     ScaffoldMessenger.of(context).showSnackBar(

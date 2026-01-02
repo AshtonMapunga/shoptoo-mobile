@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:shoptoo/features/cart/models/cart_itm.dart';
+import 'package:shoptoo/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:shoptoo/features/orders/screens/order_screen.dart' show OrderScreen;
 import 'package:shoptoo/shared/themes/colors.dart';
 
 
 class CheckoutScreen extends StatefulWidget {
   final double totalAmount;
-  final List<CartItem> cartItems;
+  final List<CartItemEntity> cartItems;
 
   const CheckoutScreen({
     Key? key,
@@ -970,7 +970,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 ),
                 Text(
-                  'P${(item.price * item.quantity).toStringAsFixed(2)}',
+                  'P${(item.price * item.quantity)}',
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,

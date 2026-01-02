@@ -589,19 +589,22 @@ class Image {
 
     String toRawJson() => json.encode(toJson());
 
+  
+
+
     factory Image.fromJson(Map<String, dynamic> json) => Image(
-        id: json["id"],
-        dateCreated: json["date_created"] == null ? null : DateTime.parse(json["date_created"]),
-        dateCreatedGmt: json["date_created_gmt"] == null ? null : DateTime.parse(json["date_created_gmt"]),
-        dateModified: json["date_modified"] == null ? null : DateTime.parse(json["date_modified"]),
-        dateModifiedGmt: json["date_modified_gmt"] == null ? null : DateTime.parse(json["date_modified_gmt"]),
-        src: json["src"],
-        name: json["name"],
-        alt: json["alt"],
-        srcset: json["srcset"],
+    id: json["id"],
+    dateCreated: json["date_created"] is String ? DateTime.tryParse(json["date_created"]) : null,
+    dateCreatedGmt: json["date_created_gmt"] is String ? DateTime.tryParse(json["date_created_gmt"]) : null,
+    dateModified: json["date_modified"] is String ? DateTime.tryParse(json["date_modified"]) : null,
+    dateModifiedGmt: json["date_modified_gmt"] is String ? DateTime.tryParse(json["date_modified_gmt"]) : null,
+    src: json["src"],
+    name: json["name"],
+    alt: json["alt"],
+     srcset: json["srcset"],
         sizes: json["sizes"],
         thumbnail: json["thumbnail"],
-    );
+);
 
     Map<String, dynamic> toJson() => {
         "id": id,

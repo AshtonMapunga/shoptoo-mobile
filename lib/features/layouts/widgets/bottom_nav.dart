@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shoptoo/features/cart/presentation/providers/cart_providers.dart';
 import 'package:shoptoo/features/cart/screens/cart_screen.dart';
 import 'package:shoptoo/features/layouts/screens/home_screen.dart';
 import 'package:shoptoo/features/profile/screens/profile_screen.dart';
-import 'package:shoptoo/features/shop/screen/shop_screen.dart' show ShopScreen;
+import 'package:shoptoo/features/shop/screen/shop_screen.dart';
 import 'package:shoptoo/features/wishlist/screens/wishlist_screen.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 
-class BottomNavigation extends StatelessWidget {
+class BottomNavigation extends ConsumerWidget {
   final int currentIndex;
   final ValueChanged<int> onTabChanged;
 
@@ -58,7 +60,12 @@ class BottomNavigation extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cartCount = ref.watch(cartControllerProvider).maybeWhen(
+          data: (items) => items.length,
+          orElse: () => 0,
+        );
+
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -78,28 +85,88 @@ class BottomNavigation extends StatelessWidget {
         unselectedItemColor: Colors.grey,
         selectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
         unselectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
-        items: const [
-          BottomNavigationBarItem(
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.storefront_outlined),
             activeIcon: Icon(Icons.storefront),
             label: 'Shop',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.favorite_border),
             activeIcon: Icon(Icons.favorite),
             label: 'Wishlist',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart_outlined),
-            activeIcon: Icon(Icons.shopping_cart),
+            icon: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Icon(Icons.shopping_cart_outlined),
+                if (cartCount > 0)
+                  Positioned(
+                    right: -6,
+                    top: -6,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '$cartCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            activeIcon: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Icon(Icons.shopping_cart),
+                if (cartCount > 0)
+                  Positioned(
+                    right: -6,
+                    top: -6,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '$cartCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
             label: 'Cart',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
             label: 'Profile',
