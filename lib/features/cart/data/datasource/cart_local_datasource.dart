@@ -1,19 +1,19 @@
-import '../../domain/entities/cart_item_entity.dart';
+import 'package:hive/hive.dart';
+import '../models/cart_item_hive.dart';
 
-class CartMemoryDataSource {
-  final List<CartItemEntity> _items = [];
+class CartHiveDataSource {
+  final Box<CartItemHive> box;
 
-  Future<List<CartItemEntity>> getItems() async {
-    return List.from(_items); // return copy
+  CartHiveDataSource(this.box);
+
+  List<CartItemHive> getItems() => box.values.toList();
+
+  Future<void> saveItems(List<CartItemHive> items) async {
+    await box.clear();
+    for (var item in items) {
+      await box.put(item.productId, item);
+    }
   }
 
-  Future<void> saveItems(List<CartItemEntity> items) async {
-    _items
-      ..clear()
-      ..addAll(items);
-  }
-
-  Future<void> clear() async {
-    _items.clear();
-  }
+  Future<void> clear() async => await box.clear();
 }

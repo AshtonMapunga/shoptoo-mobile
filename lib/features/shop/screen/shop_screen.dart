@@ -6,6 +6,7 @@ import 'package:shoptoo/app/providers/product_provider.dart';
 import 'package:shoptoo/features/cart/domain/entities/cart_item_entity.dart';
 import 'package:shoptoo/features/cart/presentation/providers/cart_providers.dart';
 import 'package:shoptoo/features/cart/screens/cart_screen.dart';
+import 'package:shoptoo/features/categories/presentation/widgets/horizontal_category_list.dart';
 import 'package:shoptoo/features/layouts/screens/main_layout.dart';
 import 'package:shoptoo/features/products/domain/entities/product_entity.dart';
 import 'package:shoptoo/features/products/screens/product_details_screen.dart';
@@ -330,15 +331,16 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
 
 void _addToCart(ProductEntity product) {
   // Add the product to the cart
-  ref.read(cartControllerProvider.notifier).addItem(
-    CartItemEntity(
-      productId: product.id,
-      name: product.name,
-      image: product.image,
-      price: product.price,
-      quantity: 1,
-    ),
-  );
+ ref.read(cartControllerProvider.notifier).addItem(
+  CartItemEntity(
+    productId: product.id,
+    name: product.name,
+    image: product.image,
+    price: double.tryParse(product.price) ?? 0.0, // ✅ convert here
+    quantity: 1,
+  ),
+);
+
 
   // Show snackbar confirmation
   ScaffoldMessenger.of(context).showSnackBar(
@@ -503,7 +505,7 @@ void _onCategorySelected(int index) {
                 ),
               ],
             ),
-            SliverToBoxAdapter(child: _buildCategories()),
+            SliverToBoxAdapter(child: CategoryHorizontalList(),),
           ];
         },
         body: _selectedCategory == 0 

@@ -44,8 +44,12 @@ class CartController extends StateNotifier<AsyncValue<List<CartItemEntity>>> {
   }
 
   Future<void> updateItemQuantity({required int productId, required int quantity}) async {
-    await updateQuantity(productId: productId, quantity: quantity);
-    await loadCart();
+    if (quantity <= 0) {
+      await removeItem(productId);
+    } else {
+      await updateQuantity(productId: productId, quantity: quantity);
+      await loadCart();
+    }
   }
 
   Future<void> clearCart() async {

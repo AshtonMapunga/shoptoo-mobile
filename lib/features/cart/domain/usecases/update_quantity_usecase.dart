@@ -5,7 +5,8 @@ class UpdateQuantityUseCase {
 
   UpdateQuantityUseCase(this.repository);
 
-  Future<void> call({required int productId, required int quantity}) async {
-    await repository.updateQuantity(productId: productId, quantity: quantity);
-  }
+Future<void> call({required int productId, required int quantity}) async {
+  await repository.updateQuantity(productId: productId, quantity: quantity);
+}
+
 }

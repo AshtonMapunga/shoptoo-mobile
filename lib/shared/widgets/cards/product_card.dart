@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shoptoo/features/products/domain/entities/product_entity.dart';
+import 'package:shoptoo/features/wishlist/domain/entity/wishlist_item_entity.dart';
+import 'package:shoptoo/features/wishlist/presentation/provider/wishlist_providers.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 
-class ProductCardComponent extends StatelessWidget {
+class ProductCardComponent extends ConsumerWidget {
   final ProductEntity product;
   final VoidCallback? onTap;
   final VoidCallback? onAddToCart;
@@ -23,12 +26,16 @@ class ProductCardComponent extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final priceValue = double.tryParse(product.price) ?? 0;
     final regularPriceValue = double.tryParse(product.regularPrice) ?? 0;
     final discount = regularPriceValue > 0
         ? ((regularPriceValue - priceValue) / regularPriceValue * 100).round()
         : 0;
+
+    final isWishlisted = ref
+        .watch(wishlistProvider)
+        .any((item) => item.productId == product.id);
 
     return GestureDetector(
       onTap: onTap,
@@ -49,7 +56,7 @@ class ProductCardComponent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildProductImage(discount),
+            _buildProductImage(context, discount, isWishlisted, ref),
             const SizedBox(height: 8),
             Expanded(
               child: Padding(
@@ -82,7 +89,7 @@ class ProductCardComponent extends StatelessWidget {
     );
   }
 
-  Widget _buildProductImage(int discount) {
+  Widget _buildProductImage(BuildContext context, int discount, bool isWishlisted, WidgetRef ref) {
     return Stack(
       children: [
         ClipRRect(
@@ -132,10 +139,65 @@ class ProductCardComponent extends StatelessWidget {
               ),
             ),
           ),
+        
+        // Creative Wishlist Icon - Floating Action Style
+        Positioned(
+          top: 8,
+          right: 8,
+          child: GestureDetector(
+            onTap: () {
+              ref.read(wishlistProvider.notifier).toggleWishlist(
+                WishlistItemEntity(
+                  productId: product.id,
+                  name: product.name,
+                  image: product.image,
+                  price: product.price,
+                  // Add any other relevant fields from product
+                ),
+              );
+              
+              // Show feedback animation
+              _showWishlistFeedback(context, isWishlisted);
+            },
+            child: Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, animation) {
+                    return ScaleTransition(
+                      scale: animation,
+                      child: child,
+                    );
+                  },
+                  child: Icon(
+                    isWishlisted ? Iconsax.heart5 : Iconsax.heart,
+                    key: ValueKey<bool>(isWishlisted),
+                    color: isWishlisted ? Colors.red : Colors.grey[600],
+                    size: 18,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+
         if (product.featured)
           Positioned(
-            top: 8,
-            right: 8,
+            top: discount > 0 ? 35 : 8,
+            left: 8,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
               decoration: BoxDecoration(
@@ -150,8 +212,9 @@ class ProductCardComponent extends StatelessWidget {
           ),
         if (product.isNew)
           Positioned(
-            top: product.featured ? 30 : 8,
-            right: 8,
+            top: (product.featured && discount > 0) ? 58 : 
+                 (product.featured && discount == 0) ? 35 : 8,
+            left: 8,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
               decoration: BoxDecoration(
@@ -168,10 +231,36 @@ class ProductCardComponent extends StatelessWidget {
     );
   }
 
+  void _showWishlistFeedback(BuildContext context, bool isCurrentlyWishlisted) {
+    // Show a small snackbar feedback
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isCurrentlyWishlisted 
+            ? 'Removed from wishlist' 
+            : 'Added to wishlist! ❤️',
+          style: GoogleFonts.poppins(fontSize: 12),
+        ),
+        backgroundColor: isCurrentlyWishlisted ? Colors.grey[700] : Pallete.primaryColor,
+        duration: const Duration(milliseconds: 1500),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 100,
+          right: 20,
+          left: 20,
+        ),
+      ),
+    );
+  }
+
   Widget _buildRating() {
     return Row(
       children: [
-        Icon(Icons.star, color: Colors.amber, size: 10),
+        const Icon(Icons.star, color: Colors.amber, size: 10),
         const SizedBox(width: 4),
         Text(
           product.rating.toStringAsFixed(1),
@@ -198,7 +287,7 @@ class ProductCardComponent extends StatelessWidget {
       children: [
         Text(
           'P${product.price}',
-        style: GoogleFonts.poppins(
+          style: GoogleFonts.poppins(
             fontSize: 14,
             fontWeight: FontWeight.w700,
             color: Pallete.primaryColor,
@@ -209,7 +298,7 @@ class ProductCardComponent extends StatelessWidget {
             'P${product.regularPrice}',
             style: GoogleFonts.poppins(
               fontSize: 10,
-              color:  Colors.grey[500],
+              color: Colors.grey[500],
               decoration: TextDecoration.lineThrough,
             ),
           ),
@@ -246,7 +335,3 @@ class ProductCardComponent extends StatelessWidget {
     );
   }
 }
-
-
-
-

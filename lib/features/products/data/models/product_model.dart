@@ -302,80 +302,169 @@ class ProductModel {
 
     String toRawJson() => json.encode(toJson());
 
-    factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
-        id: json["id"],
-        name: json["name"],
-        slug: json["slug"],
-        permalink: json["permalink"],
-        dateCreated: json["date_created"] == null ? null : DateTime.parse(json["date_created"]),
-        dateCreatedGmt: json["date_created_gmt"] == null ? null : DateTime.parse(json["date_created_gmt"]),
-        dateModified: json["date_modified"] == null ? null : DateTime.parse(json["date_modified"]),
-        dateModifiedGmt: json["date_modified_gmt"] == null ? null : DateTime.parse(json["date_modified_gmt"]),
-        type: json["type"],
-        status: json["status"],
-        featured: json["featured"],
-        catalogVisibility: json["catalog_visibility"],
-        description: json["description"],
-        shortDescription: json["short_description"],
-        sku: json["sku"],
-        price: json["price"],
-        regularPrice: json["regular_price"],
-        salePrice: json["sale_price"],
-        dateOnSaleFrom: json["date_on_sale_from"],
-        dateOnSaleFromGmt: json["date_on_sale_from_gmt"],
-        dateOnSaleTo: json["date_on_sale_to"],
-        dateOnSaleToGmt: json["date_on_sale_to_gmt"],
-        onSale: json["on_sale"],
-        purchasable: json["purchasable"],
-        totalSales: json["total_sales"],
-        virtual: json["virtual"],
-        downloadable: json["downloadable"],
-        downloads: json["downloads"] == null ? [] : List<dynamic>.from(json["downloads"]!.map((x) => x)),
-        downloadLimit: json["download_limit"],
-        downloadExpiry: json["download_expiry"],
-        externalUrl: json["external_url"],
-        buttonText: json["button_text"],
-        taxStatus: json["tax_status"],
-        taxClass: json["tax_class"],
-        manageStock: json["manage_stock"],
-        stockQuantity: json["stock_quantity"],
-        backorders: json["backorders"],
-        backordersAllowed: json["backorders_allowed"],
-        backordered: json["backordered"],
-        lowStockAmount: json["low_stock_amount"],
-        soldIndividually: json["sold_individually"],
-        weight: json["weight"],
-        dimensions: json["dimensions"] == null ? null : Dimensions.fromJson(json["dimensions"]),
-        shippingRequired: json["shipping_required"],
-        shippingTaxable: json["shipping_taxable"],
-        shippingClass: json["shipping_class"],
-        shippingClassId: json["shipping_class_id"],
-        reviewsAllowed: json["reviews_allowed"],
-        averageRating: json["average_rating"],
-        ratingCount: json["rating_count"],
-        upsellIds: json["upsell_ids"] == null ? [] : List<dynamic>.from(json["upsell_ids"]!.map((x) => x)),
-        crossSellIds: json["cross_sell_ids"] == null ? [] : List<dynamic>.from(json["cross_sell_ids"]!.map((x) => x)),
-        parentId: json["parent_id"],
-        purchaseNote: json["purchase_note"],
-        categories: json["categories"] == null ? [] : List<Category>.from(json["categories"]!.map((x) => Category.fromJson(x))),
-        brands: json["brands"] == null ? [] : List<dynamic>.from(json["brands"]!.map((x) => x)),
-        tags: json["tags"] == null ? [] : List<dynamic>.from(json["tags"]!.map((x) => x)),
-        images: json["images"] == null ? [] : List<Image>.from(json["images"]!.map((x) => Image.fromJson(x))),
-        attributes: json["attributes"] == null ? [] : List<dynamic>.from(json["attributes"]!.map((x) => x)),
-        defaultAttributes: json["default_attributes"] == null ? [] : List<dynamic>.from(json["default_attributes"]!.map((x) => x)),
-        variations: json["variations"] == null ? [] : List<dynamic>.from(json["variations"]!.map((x) => x)),
-        groupedProducts: json["grouped_products"] == null ? [] : List<dynamic>.from(json["grouped_products"]!.map((x) => x)),
-        menuOrder: json["menu_order"],
-        priceHtml: json["price_html"],
-        relatedIds: json["related_ids"] == null ? [] : List<int>.from(json["related_ids"]!.map((x) => x)),
-        metaData: json["meta_data"] == null ? [] : List<MetaDatum>.from(json["meta_data"]!.map((x) => MetaDatum.fromJson(x))),
-        stockStatus: json["stock_status"],
-        hasOptions: json["has_options"],
-        postPassword: json["post_password"],
-        globalUniqueId: json["global_unique_id"],
-        store: json["store"] == null ? null : Store.fromJson(json["store"]),
-        links: json["_links"] == null ? null : Links.fromJson(json["_links"]),
-    );
+factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
+  // 🔹 IDs
+  id: int.tryParse(json["id"].toString()) ?? 0,
+  parentId: int.tryParse(json["parent_id"]?.toString() ?? ''),
+
+  // 🔹 Basic info
+  name: json["name"] ?? '',
+  slug: json["slug"],
+  permalink: json["permalink"],
+  type: json["type"],
+  status: json["status"],
+  description: json["description"],
+  shortDescription: json["short_description"],
+  sku: json["sku"],
+
+  // 🔹 Dates
+  dateCreated: json["date_created"] == null
+      ? null
+      : DateTime.parse(json["date_created"]),
+  dateCreatedGmt: json["date_created_gmt"] == null
+      ? null
+      : DateTime.parse(json["date_created_gmt"]),
+  dateModified: json["date_modified"] == null
+      ? null
+      : DateTime.parse(json["date_modified"]),
+  dateModifiedGmt: json["date_modified_gmt"] == null
+      ? null
+      : DateTime.parse(json["date_modified_gmt"]),
+  dateOnSaleFrom: json["date_on_sale_from"],
+  dateOnSaleFromGmt: json["date_on_sale_from_gmt"],
+  dateOnSaleTo: json["date_on_sale_to"],
+  dateOnSaleToGmt: json["date_on_sale_to_gmt"],
+
+  // 🔹 Prices (Woo returns strings)
+  price: json["price"]?.toString() ?? '',
+  regularPrice: json["regular_price"]?.toString() ?? '',
+  salePrice: json["sale_price"]?.toString(),
+
+  // 🔹 Ratings
+  averageRating: json["average_rating"]?.toString() ?? '0.0',
+
+  ratingCount:
+      int.tryParse(json["rating_count"]?.toString() ?? '0') ?? 0,
+
+  // 🔹 Sales & stock
+  totalSales:
+      int.tryParse(json["total_sales"]?.toString() ?? '0') ?? 0,
+  manageStock: json["manage_stock"] == true ||
+      json["manage_stock"] == 1 ||
+      json["manage_stock"] == "true",
+  stockQuantity: json["stock_quantity"] == null
+      ? null
+      : int.tryParse(json["stock_quantity"].toString()),
+  stockStatus: json["stock_status"],
+  lowStockAmount: json["low_stock_amount"],
+
+  // 🔹 Flags (bool safety)
+  featured: json["featured"] == true ||
+      json["featured"] == 1 ||
+      json["featured"] == "true",
+  onSale: json["on_sale"] == true ||
+      json["on_sale"] == 1 ||
+      json["on_sale"] == "true",
+  purchasable: json["purchasable"] == true ||
+      json["purchasable"] == 1 ||
+      json["purchasable"] == "true",
+  virtual: json["virtual"] == true ||
+      json["virtual"] == 1 ||
+      json["virtual"] == "true",
+  downloadable: json["downloadable"] == true ||
+      json["downloadable"] == 1 ||
+      json["downloadable"] == "true",
+  soldIndividually: json["sold_individually"] == true ||
+      json["sold_individually"] == 1 ||
+      json["sold_individually"] == "true",
+  reviewsAllowed: json["reviews_allowed"] == true ||
+      json["reviews_allowed"] == 1 ||
+      json["reviews_allowed"] == "true",
+  hasOptions: json["has_options"] == true ||
+      json["has_options"] == 1 ||
+      json["has_options"] == "true",
+
+  // 🔹 Shipping & tax
+  weight: json["weight"],
+  dimensions: json["dimensions"] == null
+      ? null
+      : Dimensions.fromJson(json["dimensions"]),
+  shippingRequired: json["shipping_required"],
+  shippingTaxable: json["shipping_taxable"],
+  shippingClass: json["shipping_class"],
+  shippingClassId:
+      int.tryParse(json["shipping_class_id"]?.toString() ?? '0') ?? 0,
+  taxStatus: json["tax_status"],
+  taxClass: json["tax_class"],
+
+  // 🔹 Backorders
+  backorders: json["backorders"],
+  backordersAllowed: json["backorders_allowed"],
+  backordered: json["backordered"],
+
+  // 🔹 External
+  externalUrl: json["external_url"],
+  buttonText: json["button_text"],
+  purchaseNote: json["purchase_note"],
+  menuOrder:
+      int.tryParse(json["menu_order"]?.toString() ?? '0') ?? 0,
+  priceHtml: json["price_html"],
+  globalUniqueId: json["global_unique_id"],
+  postPassword: json["post_password"],
+
+  // 🔹 Lists
+  downloads: json["downloads"] == null
+      ? []
+      : List<dynamic>.from(json["downloads"].map((x) => x)),
+  upsellIds: json["upsell_ids"] == null
+      ? []
+      : List<int>.from(json["upsell_ids"].map((x) => int.parse(x.toString()))),
+  crossSellIds: json["cross_sell_ids"] == null
+      ? []
+      : List<int>.from(json["cross_sell_ids"].map((x) => int.parse(x.toString()))),
+  relatedIds: json["related_ids"] == null
+      ? []
+      : List<int>.from(json["related_ids"].map((x) => int.parse(x.toString()))),
+
+  categories: json["categories"] == null
+      ? []
+      : List<Category>.from(
+          json["categories"].map((x) => Category.fromJson(x))),
+  brands: json["brands"] == null
+      ? []
+      : List<dynamic>.from(json["brands"].map((x) => x)),
+  tags: json["tags"] == null
+      ? []
+      : List<dynamic>.from(json["tags"].map((x) => x)),
+  images: json["images"] == null
+      ? []
+      : List<Image>.from(
+          json["images"].map((x) => Image.fromJson(x))),
+  attributes: json["attributes"] == null
+      ? []
+      : List<dynamic>.from(json["attributes"].map((x) => x)),
+  defaultAttributes: json["default_attributes"] == null
+      ? []
+      : List<dynamic>.from(json["default_attributes"].map((x) => x)),
+  variations: json["variations"] == null
+      ? []
+      : List<dynamic>.from(json["variations"].map((x) => x)),
+  groupedProducts: json["grouped_products"] == null
+      ? []
+      : List<dynamic>.from(json["grouped_products"].map((x) => x)),
+
+  // 🔹 Metadata
+  metaData: json["meta_data"] == null
+      ? []
+      : List<MetaDatum>.from(
+          json["meta_data"].map((x) => MetaDatum.fromJson(x))),
+
+  // 🔹 Store & links
+  store:
+      json["store"] == null ? null : Store.fromJson(json["store"]),
+  links:
+      json["_links"] == null ? null : Links.fromJson(json["_links"]),
+);
 
     Map<String, dynamic> toJson() => {
         "id": id,

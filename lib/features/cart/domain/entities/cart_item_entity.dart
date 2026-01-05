@@ -2,7 +2,7 @@ class CartItemEntity {
   final int productId;
   final String name;
   final String image;
-  final String price;
+  final double price; // already double
   final int quantity;
 
   CartItemEntity({
@@ -14,8 +14,7 @@ class CartItemEntity {
   });
 
   /// 🔹 Derived value
-  double get totalPrice =>
-      (double.tryParse(price) ?? 0) * quantity;
+  double get totalPrice => price * quantity;
 
   /// 🔹 Copy (used for quantity updates)
   CartItemEntity copyWith({
@@ -30,13 +29,15 @@ class CartItemEntity {
     );
   }
 
-  /// ✅ SERIALIZATION (REQUIRED)
+  /// ✅ Serialization
   factory CartItemEntity.fromJson(Map<String, dynamic> json) {
     return CartItemEntity(
       productId: json['productId'],
       name: json['name'],
       image: json['image'],
-      price: json['price'],
+      price: (json['price'] is String)
+          ? double.tryParse(json['price']) ?? 0
+          : (json['price'] as num).toDouble(),
       quantity: json['quantity'],
     );
   }

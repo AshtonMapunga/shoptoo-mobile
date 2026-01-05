@@ -22,7 +22,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     'phone': '+267 71 234 567',
     'joinedDate': 'January 2024',
     'location': 'Gaborone, Botswana',
-    'profileImage': 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+    'profileImage':
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
   };
 
   final List<ProfileMenuItem> _menuItems = [
@@ -58,6 +59,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       icon: Iconsax.message_question,
       color: Colors.orange,
     ),
+
+    ProfileMenuItem(
+      title: 'Notifications',
+      icon: Iconsax.message_question,
+      color: Colors.orange,
+    ),
     ProfileMenuItem(
       title: 'About Us',
       icon: Iconsax.info_circle,
@@ -71,11 +78,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     OrderStats(status: 'Cancelled', count: 1, color: Colors.red),
   ];
 
-
-final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
-  final repository = ref.read(authRepositoryProvider);
-  return SignOutUseCase(repository);
-});
+  final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
+    final repository = ref.read(authRepositoryProvider);
+    return SignOutUseCase(repository);
+  });
 
   Future<void> _logout(BuildContext context, WidgetRef ref) async {
     try {
@@ -83,17 +89,15 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
       await signOutUseCase();
 
       // Navigate to login screen after logout
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error logging out: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error logging out: $e')));
     }
   }
-
-  
 
   void _editProfile() {
     showModalBottomSheet(
@@ -225,7 +229,6 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
     );
   }
 
- 
   @override
   Widget build(BuildContext context) {
     return MainLayout(
@@ -234,7 +237,7 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
         children: [
           // Background animated circles
           _buildBackgroundCircles(),
-          
+
           // Main content
           CustomScrollView(
             slivers: [
@@ -264,7 +267,9 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
                                 height: 150,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Pallete.secondaryColor.withOpacity(0.15),
+                                  color: Pallete.secondaryColor.withOpacity(
+                                    0.15,
+                                  ),
                                 ),
                               ),
                             );
@@ -287,7 +292,9 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
                                 height: 100,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Pallete.secondaryColor.withOpacity(0.1),
+                                  color: Pallete.secondaryColor.withOpacity(
+                                    0.1,
+                                  ),
                                 ),
                               ),
                             );
@@ -319,35 +326,25 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
               ),
 
               // Profile Header
-              SliverToBoxAdapter(
-                child: _buildProfileHeader(),
-              ),
-
-            
+              SliverToBoxAdapter(child: _buildProfileHeader()),
 
               // Menu Items
               SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return _buildMenuItem(_menuItems[index]);
-                  },
-                  childCount: _menuItems.length,
-                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return _buildMenuItem(_menuItems[index]);
+                }, childCount: _menuItems.length),
               ),
 
               // Logout Button
-              SliverToBoxAdapter(
-                child: _buildLogoutButton(),
-              ),
+              SliverToBoxAdapter(child: _buildLogoutButton()),
 
               // Bottom Spacing
-              SliverToBoxAdapter(
-                child: SizedBox(height: 30),
-              ),
+              SliverToBoxAdapter(child: SizedBox(height: 30)),
             ],
           ),
         ],
-      ), appBar: null,
+      ),
+      appBar: null,
     );
   }
 
@@ -481,7 +478,7 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
             ),
           ),
           SizedBox(width: 16),
-          
+
           // User Info
           Expanded(
             child: Column(
@@ -513,7 +510,7 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
               ],
             ),
           ),
-          
+
           // Edit Button
           Container(
             width: 40,
@@ -532,7 +529,6 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
       ),
     );
   }
-
 
   Widget _buildMenuItem(ProfileMenuItem item) {
     return Container(
@@ -564,11 +560,7 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
                     color: item.color.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    item.icon,
-                    color: item.color,
-                    size: 20,
-                  ),
+                  child: Icon(item.icon, color: item.color, size: 20),
                 ),
                 SizedBox(width: 12),
                 Expanded(
@@ -597,11 +589,7 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
                     ),
                   ),
                 SizedBox(width: 8),
-                Icon(
-                  Iconsax.arrow_right_3,
-                  color: Colors.grey[400],
-                  size: 16,
-                ),
+                Icon(Iconsax.arrow_right_3, color: Colors.grey[400], size: 16),
               ],
             ),
           ),
@@ -612,38 +600,37 @@ final signOutUseCaseProvider = Provider<SignOutUseCase>((ref) {
 
   Widget _buildLogoutButton() {
     return Consumer(
-  builder: (context, ref, child) {
-    return Container(
-      margin: const EdgeInsets.all(20),
-      child: OutlinedButton(
-        onPressed: () => _logout(context, ref), 
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          side: const BorderSide(color: Colors.red),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Iconsax.logout, color: Colors.red, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              'Logout',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.red,
+      builder: (context, ref, child) {
+        return Container(
+          margin: const EdgeInsets.all(20),
+          child: OutlinedButton(
+            onPressed: () => _logout(context, ref),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
+              side: const BorderSide(color: Colors.red),
             ),
-          ],
-        ),
-      ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Iconsax.logout, color: Colors.red, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Logout',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
-  },
-);
-
   }
 }
 
@@ -666,9 +653,5 @@ class OrderStats {
   final int count;
   final Color color;
 
-  OrderStats({
-    required this.status,
-    required this.count,
-    required this.color,
-  });
+  OrderStats({required this.status, required this.count, required this.color});
 }
