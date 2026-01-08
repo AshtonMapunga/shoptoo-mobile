@@ -6,6 +6,9 @@ import 'package:shoptoo/features/auth/domain/repositories/auth_repository.dart';
 class AuthController extends StateNotifier<AsyncValue<UserEntity?>> {
   final AuthRepository repository;
 
+ 
+
+
   AuthController(this.repository)
       : super(const AsyncValue.loading()) {
     repository.authStateChanges().listen((user) {

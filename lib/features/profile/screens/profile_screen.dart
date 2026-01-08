@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shoptoo/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:shoptoo/features/auth/screens/login_screen.dart';
+import 'package:shoptoo/features/chat/screens/technical_list_screen.dart';
 import 'package:shoptoo/features/layouts/screens/main_layout.dart';
 import 'package:shoptoo/shared/themes/colors.dart';
 
@@ -25,6 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     'profileImage':
         'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
   };
+final userId = FirebaseAuth.instance.currentUser!.uid;
 
   final List<ProfileMenuItem> _menuItems = [
     ProfileMenuItem(
@@ -57,6 +60,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ProfileMenuItem(
       title: 'Help & Support',
       icon: Iconsax.message_question,
+      color: Colors.orange,
+    ),
+
+    ProfileMenuItem(
+      title: 'Messenger',
+      icon: Iconsax.message,
       color: Colors.orange,
     ),
 
@@ -221,13 +230,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showMenuAction(ProfileMenuItem item) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Opening ${item.title}'),
-        backgroundColor: Pallete.primaryColor,
-      ),
-    );
+  switch (item.title) {
+    
+
+    case 'Messenger':
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => TechnicianListScreen(userId: userId)),
+      );
+      break;
+
+   
+    default:
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Opening ${item.title}'),
+          backgroundColor: Pallete.primaryColor,
+        ),
+      );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
